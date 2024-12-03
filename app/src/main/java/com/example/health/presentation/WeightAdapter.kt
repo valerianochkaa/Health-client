@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
+import com.example.health.data.weights.WeightsDTO
 import com.example.health.data.weights.WeightsList
 
 class WeightAdapter(
-    private var weightList: List<WeightsList>,
-    private val context: Context?
+    private var weightList: List<WeightsDTO>,
+    private val context: Context?,
+    private val onDelete: (Int) -> Unit
 ) : RecyclerView.Adapter<WeightAdapter.WeightViewHolder>() {
 
     inner class WeightViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -25,12 +27,22 @@ class WeightAdapter(
     }
 
     override fun onBindViewHolder(holder: WeightViewHolder, position: Int) {
-        val weightDate = weightList[position]
-        holder.value.text = "${weightDate.weightValue} кг"
-        holder.recordDate.text = weightDate.recordDate
+        val weightData = weightList[position]
+        holder.value.text = "${weightData.weightValue} кг"
+        holder.recordDate.text = weightData.recordDate
+
+        holder.itemView.setOnLongClickListener {
+            onDelete(weightData.weightId ?: 0)
+            true
+        }
     }
 
     override fun getItemCount(): Int {
         return weightList.size
+    }
+
+    fun updateData(newWeightList: List<WeightsDTO>) {
+        weightList = newWeightList
+        notifyDataSetChanged()
     }
 }

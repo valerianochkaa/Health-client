@@ -2,39 +2,38 @@ package com.example.health.pages
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
-import com.example.health.data.weights.WeightsList
+import com.example.health.data.weights.WeightsDTO
 import com.example.health.databinding.FragmentWeightBinding
+import com.example.health.utils.RetrofitInstance
 import com.example.health.utils.SwipeToDeleteCallback
 import com.example.myhealth.ui.adapters.WeightAdapter
-import java.text.SimpleDateFormat
-import java.util.ArrayList
-import java.util.Date
-import java.util.Locale
+import kotlinx.coroutines.launch
 
 class WeightFragment : Fragment(R.layout.fragment_weight) {
-    // View binding
+    // View Binding
     private var _binding: FragmentWeightBinding? = null
     private val binding get() = _binding!!
 
     // Recycler View
-    private var weightList = ArrayList<WeightsList>()
     private lateinit var adapter: WeightAdapter
+    private val weightList = mutableListOf<WeightsDTO>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentWeightBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -43,54 +42,72 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
         super.onViewCreated(view, savedInstanceState)
 
         // Navigation Component
-        binding.btnBack.setOnClickListener{
+        binding.btnBack.setOnClickListener {
             findNavController().navigate(R.id.weight_to_diary)
         }
 
         // Recycler View
         binding.recycler.layoutManager = LinearLayoutManager(context)
-        addDataToList()
-        adapter = WeightAdapter(weightList, context)
+        adapter = WeightAdapter(weightList, context) { weightId ->
+            deleteWeight(weightId)
+        }
         binding.recycler.adapter = adapter
+        fetchWeights()
 
+        // SetOnClickListener - btnAdd
         binding.btnAdd.setOnClickListener {
             addWeight()
             hideKeyboard()
         }
 
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(){
+        // SwipeToDeleteCallback
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                weightList.removeAt(position)
-                binding.recycler.adapter?.notifyItemRemoved(position)
+                val weightId = weightList[position].weightId ?: return
+                deleteWeight(weightId)
+                adapter.notifyItemRemoved(position)
             }
         }
-        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
-        itemTouchHelper.attachToRecyclerView(binding.recycler)
+        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding.recycler)
     }
 
-    private fun addDataToList() {
-        weightList.add(WeightsList(55.0,"01 января 2024, 8:00"))
-        weightList.add(WeightsList(55.5,"02 января 2024, 8:10"))
+    private fun fetchWeights() {
+        lifecycleScope.launch {
+            try {
+                val weights = RetrofitInstance.apiWeights.getAllWeights()
+                weightList.clear()
+                weightList.addAll(weights)
+                adapter.updateData(weightList)
+            } catch (e: Exception) {
+                Log.e("WeightFragment", "Error fetching weights", e)
+            }
+        }
     }
 
     private fun addWeight() {
-        val weightInput = binding.editValue.text.toString()
+        val newWeight = WeightsDTO(userIdWeights = 1, weightValue = 70.0, recordDate = "2023-10-01")
 
-        if (weightInput.isEmpty()) {
-            Toast.makeText(context, "Введите вес", Toast.LENGTH_SHORT).show()
-            return
+        lifecycleScope.launch {
+            try {
+                val addedWeight = RetrofitInstance.apiWeights.insertWeightAndGetId(newWeight)
+                weightList.add(addedWeight)
+                adapter.updateData(weightList)
+            } catch (e: Exception) {
+                Log.e("WeightFragment", "Error adding weight", e)
+            }
         }
+    }
 
-        try {
-            val currentDate = SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.getDefault()).format(Date())
-
-            weightList.add(WeightsList(weightInput.toDouble(), currentDate))
-            adapter.notifyItemInserted(weightList.size - 1)
-
-            binding.editValue.text.clear()
-        } catch (e: NumberFormatException) {
-            Toast.makeText(context, "Некорректный ввод", Toast.LENGTH_SHORT).show()
+    private fun deleteWeight(weightId: Int) {
+        lifecycleScope.launch {
+            try {
+                RetrofitInstance.apiWeights.deleteWeightById(weightId)
+                weightList.removeAll { it.weightId == weightId }
+                adapter.updateData(weightList)
+            } catch (e: Exception) {
+                Log.e("WeightFragment", "Error deleting weight", e)
+            }
         }
     }
 

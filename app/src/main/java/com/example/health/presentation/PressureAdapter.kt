@@ -7,11 +7,13 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
+import com.example.health.data.pressures.PressuresDTO
 import com.example.health.data.pressures.PressuresList
 
 class PressureAdapter(
-    private var pressureList: List<PressuresList>,
-    private val context: Context?
+    private var pressureList: List<PressuresDTO>,
+    private val context: Context?,
+    private val onDelete: (Int) -> Unit
 ) : RecyclerView.Adapter<PressureAdapter.PressureViewHolder>() {
 
     inner class PressureViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -25,12 +27,22 @@ class PressureAdapter(
     }
 
     override fun onBindViewHolder(holder: PressureViewHolder, position: Int) {
-        val pressureDate = pressureList[position]
-        holder.value.text = "${pressureDate.upperValue} / ${pressureDate.lowerValue} / ${pressureDate.pulseValue}"
-        holder.recordDate.text = pressureDate.recordDate
+        val pressureData = pressureList[position]
+        holder.value.text = "${pressureData.upperValue} / ${pressureData.lowerValue} / ${pressureData.pulseValue}"
+        holder.recordDate.text = pressureData.recordDate
+
+        holder.itemView.setOnLongClickListener {
+            onDelete(pressureData.pressureId ?: 0)
+            true
+        }
     }
 
     override fun getItemCount(): Int {
         return pressureList.size
+    }
+
+    fun updateData(newPressureList: List<PressuresDTO>) {
+        pressureList = newPressureList
+        notifyDataSetChanged()
     }
 }

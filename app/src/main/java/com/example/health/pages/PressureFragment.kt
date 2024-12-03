@@ -2,25 +2,30 @@ package com.example.health.pages
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
+import com.example.health.data.pressures.PressuresDTO
 import com.example.health.data.pressures.PressuresList
 import com.example.health.data.temperatures.TemperaturesList
 import com.example.health.data.weights.WeightsList
 import com.example.health.databinding.FragmentPressureBinding
+import com.example.health.utils.RetrofitInstance
 import com.example.health.utils.SwipeToDeleteCallback
 import com.example.myhealth.ui.adapters.PressureAdapter
 import com.example.myhealth.ui.adapters.TemperatureAdapter
 import com.example.myhealth.ui.adapters.WeightAdapter
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Date
@@ -33,8 +38,8 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
     private val binding get() = _binding!!
 
     // Recycler View
-    private var pressuresList = ArrayList<PressuresList>()
     private lateinit var adapter: PressureAdapter
+    private var pressureList = mutableListOf<PressuresDTO>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,64 +59,75 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
 
         // Recycler View
         binding.recycler.layoutManager = LinearLayoutManager(context)
-        addDataToList()
-        adapter = PressureAdapter(pressuresList, context)
+        adapter = PressureAdapter(pressureList, context) { pressureId ->
+            deletePressure(pressureId)
+        }
         binding.recycler.adapter = adapter
+        fetchPressures()
 
+        // SetOnClickListener - btnAdd
         binding.btnAdd.setOnClickListener {
             addPressure()
             hideKeyboard()
         }
 
-        val swipeToDeleteCallback = object : SwipeToDeleteCallback(){
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean {
-                TODO("Not yet implemented")
-            }
-
+        val swipeToDeleteCallback = object : SwipeToDeleteCallback() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                pressuresList.removeAt(position)
-                binding.recycler.adapter?.notifyItemRemoved(position)
+                val pressureId = pressureList[position].pressureId ?: return
+                deletePressure(pressureId)
+                adapter.notifyItemRemoved(position)
             }
         }
-        val itemTouchHelper = ItemTouchHelper(swipeToDeleteCallback)
-        itemTouchHelper.attachToRecyclerView(binding.recycler)
+
+        ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding.recycler)
     }
 
-    private fun addDataToList() {
-        pressuresList.add(PressuresList(120,80,72,"01 января 2024, 8:00"))
-        pressuresList.add(PressuresList(115,75,68,"02 января 2024, 8:10"))
+    private fun fetchPressures() {
+        lifecycleScope.launch {
+            try {
+                val pressures = RetrofitInstance.apiPressures.getAllPressures()
+                pressureList.clear()
+                pressureList.addAll(pressures)
+                adapter.updateData(pressureList)
+            } catch (e: Exception) {
+                Log.e("PressureFragment", "Error fetching pressures", e)
+            }
+        }
     }
 
     private fun addPressure() {
-        val upperInput = binding.editValue1.text.toString()
-        val lowerInput = binding.editValue2.text.toString()
-        val pulseInput = binding.editValue3.text.toString()
+        val newPressure = PressuresDTO(
+            userIdPressure = 1,
+            upperValue = 120,
+            lowerValue = 80,
+            pulseValue = 75,
+            recordDate = "2023-10-01"
+        )
 
-        if (upperInput.isEmpty() || lowerInput.isEmpty() || pulseInput.isEmpty()) {
-            Toast.makeText(context, "Введите все значение", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        try {
-            val currentDate = SimpleDateFormat("d MMMM yyyy, HH:mm", Locale.getDefault()).format(
-                Date()
-            )
-
-            pressuresList.add(PressuresList(upperInput.toInt(), lowerInput.toInt(), pulseInput.toInt(), currentDate))
-            adapter.notifyItemInserted(pressuresList.size - 1)
-
-            binding.editValue1.text.clear()
-            binding.editValue2.text.clear()
-            binding.editValue3.text.clear()
-        } catch (e: NumberFormatException) {
-            Toast.makeText(context, "Некорректный ввод", Toast.LENGTH_SHORT).show()
+        lifecycleScope.launch {
+            try {
+                val addedPressure = RetrofitInstance.apiPressures.insertPressureAndGetId(newPressure)
+                pressureList.add(addedPressure)
+                adapter.updateData(pressureList)
+            } catch (e: Exception) {
+                Log.e("PressureFragment", "Error adding pressure", e)
+            }
         }
     }
+
+    private fun deletePressure(pressureId: Int) {
+        lifecycleScope.launch {
+            try {
+                RetrofitInstance.apiPressures.deletePressureById(pressureId)
+                pressureList.removeAll { it.pressureId == pressureId }
+                adapter.updateData(pressureList)
+            } catch (e: Exception) {
+                Log.e("PressureFragment", "Error deleting pressure", e)
+            }
+        }
+    }
+
 
     private fun hideKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
