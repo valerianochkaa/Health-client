@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#FFFFFF</color>
+
+    <color name="text_primary">#061600</color>
+    <color name="text_secondary">#FFFFFF</color>
+    <color name="text_hint">#9D9D9D</color>
+
+    <color name="card_primary">#2C82FF</color>
+    <color name="card_secondary">#E8F1FD</color>
+    <color name="card_tertiary">#F8F8F8</color>
+
+    <color name="divider">#C0C0C0</color>
+    <color name="btn">#2C82FF</color>
+    <color name="btn_text">#FFFFFF</color>
+
+    <color name="card_weight">#62CED9</color>
+    <color name="card_pressure">#FFA5B9</color>
+    <color name="card_temperature">#A9B7D5</color>
+
+    <color name="icon">#000000</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="like">#E80000</color>
+</resources>

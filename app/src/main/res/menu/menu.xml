@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/drugsCategory"
+        android:title="@string/menu_drugs"
+        android:icon="@drawable/menu_icon1"
+        android:orderInCategory="1"/>
+    <item
+        android:id="@+id/likesFragment"
+        android:title="@string/menu_likes"
+        android:icon="@drawable/menu_icon2"
+        android:orderInCategory="2"/>
+    <item
+        android:id="@+id/diaryFragment"
+        android:title="@string/menu_diary"
+        android:icon="@drawable/menu_icon3"
+        android:orderInCategory="3"/>
+    <item
+        android:id="@+id/settingsFragment"
+        android:title="@string/menu_settings"
+        android:icon="@drawable/menu_icon4"
+        android:orderInCategory="4"/>
+</menu>

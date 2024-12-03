@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Title">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/roboto_bold</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">26sp</item>
+        <item name="android:layout_marginTop">96dp</item>
+    </style>
+
+    <style name="Header1">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_marginTop">16dp</item>
+    </style>
+    <style name="Header2" parent="Header1">
+        <item name="android:textSize">20sp</item>
+        <item name="android:layout_marginTop">0dp</item>
+    </style>
+
+    <style name="Body17">
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+    <style name="Body15" parent="Body17">
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="Body12">
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="Body17Medium" parent="Body17">
+        <item name="android:fontFamily">@font/roboto_medium</item>
+    </style>
+    <style name="Body15Medium" parent="Body15">
+        <item name="android:fontFamily">@font/roboto_medium</item>
+    </style>
+
+    <style name="EditText">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">12dp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/text_primary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+        <item name="android:background">@drawable/border_4dp</item>
+    </style>
+
+    <style name="Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">64dp</item>
+        <item name="android:layout_marginTop">36dp</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:backgroundTint">@color/btn</item>
+        <item name="android:textColor">@color/btn_text</item>
+        <item name="cornerRadius">4dp</item>
+    </style>
+    <style name="ButtonStroke" parent="Button">
+        <item name="android:textColor">@color/btn</item>
+        <item name="android:background">@drawable/button_border</item>
+    </style>
+
+    <style name="CardDrugsCategory">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginEnd">12dp</item>
+        <item name="android:background">@drawable/border_8dp</item>
+        <item name="android:backgroundTint">@color/card_secondary</item>
+    </style>
+
+    <style name="ItemSettings">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/border_4dp</item>
+        <item name="android:backgroundTint">@color/card_tertiary</item>
+        <item name="android:padding">12dp</item>
+    </style>
+</resources>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".pages.DrugsCategoryFragment">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="26dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            style="@style/Header1"
+            android:id="@+id/title"
+            android:text="@string/drugs_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="36dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/title">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardPill"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/border_8dp"
+                android:backgroundTint="@color/card_secondary"
+                android:paddingTop="26dp"
+                android:paddingBottom="26dp"
+                app:layout_constraintEnd_toStartOf="@+id/cardSpray"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/img1"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/ic_drug_category_pill"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/textView"
+                style="@style/Body17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="@string/drugs_categoryPill"
+                app:layout_constraintEnd_toEndOf="@+id/cardPill"
+                app:layout_constraintStart_toStartOf="@+id/cardPill"
+                app:layout_constraintTop_toBottomOf="@+id/cardPill" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardSpray"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/border_8dp"
+                android:backgroundTint="@color/card_secondary"
+                android:paddingTop="26dp"
+                android:paddingBottom="26dp"
+                app:layout_constraintEnd_toStartOf="@+id/cardCream"
+                app:layout_constraintStart_toEndOf="@+id/cardPill"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/img2"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/ic_drug_category_spray"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                style="@style/Body17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="@string/drugs_categorySpray"
+                app:layout_constraintEnd_toEndOf="@+id/cardSpray"
+                app:layout_constraintStart_toStartOf="@+id/cardSpray"
+                app:layout_constraintTop_toBottomOf="@+id/cardSpray" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardCream"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_8dp"
+                android:backgroundTint="@color/card_secondary"
+                android:paddingTop="26dp"
+                android:paddingBottom="26dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/cardSpray"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/img3"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/ic_drug_category_cream"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                style="@style/Body17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="@string/drugs_categoryCream"
+                app:layout_constraintEnd_toEndOf="@+id/cardCream"
+                app:layout_constraintStart_toStartOf="@+id/cardCream"
+                app:layout_constraintTop_toBottomOf="@+id/cardCream" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cardInjection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_8dp"
+                android:backgroundTint="@color/card_secondary"
+                android:layout_marginTop="26dp"
+                android:paddingTop="26dp"
+                android:paddingBottom="26dp"
+                app:layout_constraintEnd_toEndOf="@+id/cardPill"
+                app:layout_constraintStart_toStartOf="@+id/cardPill"
+                app:layout_constraintTop_toBottomOf="@id/textView">
+
+                <ImageView
+                    android:id="@+id/img4"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/ic_drug_category_injection"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                style="@style/Body17"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/drugs_categoryInjection"
+                android:layout_marginTop="18dp"
+                app:layout_constraintEnd_toEndOf="@+id/cardInjection"
+                app:layout_constraintStart_toStartOf="@+id/cardInjection"
+                app:layout_constraintTop_toBottomOf="@+id/cardInjection" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

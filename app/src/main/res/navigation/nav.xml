@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/drugsCategoryFragment"
+    android:id="@+id/navGraph">
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.example.health.pages.LoginFragment"
+        android:label="fragment_login"
+        tools:layout="@layout/fragment_login" >
+        <action
+            android:id="@+id/login_to_registration"
+            app:destination="@id/registrationFragment" />
+        <action
+            android:id="@+id/login_to_drugs_category"
+            app:destination="@id/drugsCategoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/registrationFragment"
+        android:name="com.example.health.pages.RegistrationFragment"
+        android:label="fragment_registration"
+        tools:layout="@layout/fragment_registration" >
+        <action
+            android:id="@+id/registration_to_login"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/registration_to_drugs_category"
+            app:destination="@id/drugsCategoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/drugsCategoryFragment"
+        android:name="com.example.health.pages.DrugsCategoryFragment"
+        android:label="fragment_drugs_category"
+        tools:layout="@layout/fragment_drugs_category">
+        <action android:id="@+id/drugs_category_to_drugs"
+            app:destination="@id/drugsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/drugsFragment"
+        android:name="com.example.health.pages.DrugsFragment"
+        android:label="fragment_drugs"
+        tools:layout="@layout/fragment_drugs" >
+        <action
+            android:id="@+id/drugs_to_drugs_category"
+            app:destination="@id/drugsCategoryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/likesFragment"
+        android:name="com.example.health.pages.LikesFragment"
+        android:label="fragment_likes"
+        tools:layout="@layout/fragment_likes" />
+    <fragment
+        android:id="@+id/diaryFragment"
+        android:name="com.example.health.pages.DiaryFragment"
+        android:label="fragment_diary"
+        tools:layout="@layout/fragment_diary" >
+        <action
+            android:id="@+id/diary_to_weight"
+            app:destination="@id/weightFragment" />
+        <action
+            android:id="@+id/diary_to_pressure"
+            app:destination="@id/pressureFragment" />
+        <action
+            android:id="@+id/diary_to_temperature"
+            app:destination="@id/temperatureFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/weightFragment"
+        android:name="com.example.health.pages.WeightFragment"
+        android:label="fragment_weight"
+        tools:layout="@layout/fragment_weight" >
+        <action
+            android:id="@+id/weight_to_diary"
+            app:destination="@id/diaryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/pressureFragment"
+        android:name="com.example.health.pages.PressureFragment"
+        android:label="fragment_pressure"
+        tools:layout="@layout/fragment_pressure" >
+        <action
+            android:id="@+id/pressure_to_diary"
+            app:destination="@id/diaryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/temperatureFragment"
+        android:name="com.example.health.pages.TemperatureFragment"
+        android:label="fragment_temperature"
+        tools:layout="@layout/fragment_temperature" >
+        <action
+            android:id="@+id/temperature_to_diary"
+            app:destination="@id/diaryFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.health.pages.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/settings_to_login"
+            app:destination="@id/loginFragment" />
+    </fragment>
+</navigation>

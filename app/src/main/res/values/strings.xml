@@ -1,0 +1,106 @@
+<resources>
+    <string name="app_name">Мое здоровье</string>
+
+    <string name="menu_drugs">Лекарства</string>
+    <string name="menu_likes">Избранные</string>
+    <string name="menu_diary">Дневник</string>
+    <string name="menu_settings">Настройки</string>
+
+    <string name="login_title">Вход</string>
+    <string name="login_editEmail">Почта</string>
+    <string name="login_editPass">Пароль</string>
+    <string name="login_btnLogin">Войти</string>
+    <string name="login_question">Нет аккаунта?</string>
+    <string name="login_btnReg">Зарегистрироваться</string>
+    <string name="login_btnNoLogin">Войти без аккаунта</string>
+
+    <string name="reg_title">Регистрация</string>
+    <string name="reg_editEmail">Почта</string>
+    <string name="reg_editPass">Пароль</string>
+    <string name="reg_editReturnPass">Повторите пароль</string>
+    <string name="reg_btnReg">Зарегистрироваться</string>
+    <string name="reg_question">Есть аккаунт? </string>
+    <string name="reg_btnLogin">Войти</string>
+
+    <string name="drugs_title">Категории лекарств</string>
+    <string name="drugs_categoryPill">Таблетки</string>
+    <string name="drugs_categorySpray">Спреи</string>
+    <string name="drugs_categoryCream">Мази</string>
+    <string name="drugs_categoryInjection">Уколы</string>
+    <string name="drugs_search">Поиск</string>
+    <string name="drugs_searchBlank">Ничего не найдено</string>
+
+    <string name="item_drugs_search">Название лекарства</string>
+
+    <string name="instructions_title">Инструкция по применению</string>
+    <string name="instructions_description">Описание</string>
+    <string name="instructions_activeIngredients">Действующие вещества</string>
+    <string name="instructions_composition">Состав</string>
+    <string name="instructions_indications">Показания</string>
+    <string name="instructions_contraindications">Противопоказания</string>
+    <string name="instructions_sideEffects">Побочные действия</string>
+    <string name="instructions_overdose">Передозировка</string>
+    <string name="instructions_storageConditions">Условия хранения</string>
+    <string name="instructions_prescriptionRequirements">Требования к рецепту</string>
+
+    <string name="instructions_price">Цена</string>
+    <string name="instructions_analog">Аналоги</string>
+
+    <string name="item_instructions_drugs">Название лекарства</string>
+    <string name="item_instructions_description">Описание лекарства</string>
+    <string name="item_instructions_activeIngredients">Действующие вещества лекартсва</string>
+    <string name="item_instructions_composition">Состав лекарства</string>
+    <string name="item_instructions_indications">Показания к лекарству</string>
+    <string name="item_instructions_contraindications">Противопоказания к лекарству</string>
+    <string name="item_instructions_sideEffects">Побочные действия к лекартсву</string>
+    <string name="item_instructions_overdose">Передозировка к лекарству</string>
+    <string name="item_instructions_storageConditions">Условия хранения лекарства</string>
+    <string name="item_instructions_prescriptionRequirements">Да</string>
+    <string name="item_instructions_price">150</string>
+    <string name="item_instructions_analog">Аналоги</string>
+
+    <string name="likes_title">Избранные лекарства</string>
+    <string name="likes_blank">Пусто</string>
+
+    <string name="item_drugs_like">Название лекарства</string>
+
+    <string name="diary_title">Дневник здоровья</string>
+    <string name="diary_temperature">ТЕМПЕРАТУРА</string>
+    <string name="diary_pressure">ДАВЛЕНИЕ</string>
+    <string name="diary_weight">ВЕС</string>
+
+    <string name="diary_temperature_title">Температура</string>
+    <string name="diary_temperature_subtitle1">Добавить измерение</string>
+    <string name="diary_temperature_editUnit">°С</string>
+    <string name="diary_temperature_btnAdd">Добавить</string>
+    <string name="diary_temperature_subtitle2">История</string>
+    <string name="diary_temperaturet_description">Регулярные измерения помогут врачу правильно оценить ваше состояние</string>
+
+    <string name="diary_pressure_title">Давление и пульс</string>
+    <string name="diary_pressure_subtitle1">Добавить измерение</string>
+    <string name="diary_pressure_editUnit1">верхнее, SYS</string>
+    <string name="diary_pressure_editUnit2">нижниее, DIA</string>
+    <string name="diary_pressure_editUnit3">пульс, уд./мин</string>
+    <string name="diary_pressure_btnAdd">Добавить</string>
+    <string name="diary_pressure_subtitle2">История</string>
+    <string name="diary_pressure_description">Регулярные измерения помогут врачу правильно оценить ваше состояние</string>
+
+    <string name="diary_weight_title">Вес</string>
+    <string name="diary_weight_subtitle1">Добавить измерение</string>
+    <string name="diary_weight_editUnit">кг</string>
+    <string name="diary_weight_btnAdd">Добавить</string>
+    <string name="diary_weight_subtitle2">История</string>
+    <string name="diary_weight_description">Регулярные измерения помогут врачу правильно оценить ваше состояние</string>
+
+    <string name="item_diary_value">0</string>
+    <string name="item_diary_recorDate">1 января, 07:24</string>
+
+    <string name="settings_title">Настройки</string>
+    <string name="settings_subtitle1">Тема приложения</string>
+    <string name="settings_subtitle2">О приложении</string>
+    <string name="settings_btnExit">Выйти из аккаунта</string>
+
+    <string name="settings_dialog_title">О приложении</string>
+    <string name="settings_dialog_subtitle1">«Мое здоровье» - ваш персональный помощник в управлении здоровьем! Приложение предоставляет возможность управлять списком избранных лекарств, искать аналоговые препараты и сравнивать их по цене, получать подробную инструкцию к медицинским средствам и отслеживать параметры своего здоровья, такие как температура, давление и вес.</string>
+    <string name="settings_dialog_subtitle2">"Данное приложение было разработано в рамках курсовой работы ученицы РТУ МИРЭА Иванова В.А. ИКБО–26–21"</string>
+</resources>
