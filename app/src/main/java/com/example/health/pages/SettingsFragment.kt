@@ -38,9 +38,9 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             activity?.recreate()
         }
 
-        // Navigation Component
-        binding.btnLogout.setOnClickListener{
-            findNavController().navigate(R.id.settings_to_login)
+        // Logout button logic
+        binding.btnLogout.setOnClickListener {
+            logoutUser()
         }
 
         // Dialog
@@ -51,5 +51,26 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
                 }
             ).show(parentFragmentManager, "dialog")
         }
+    }
+
+    private fun logoutUser() {
+        // Удаление токена из SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            remove("token") // Удаляем сохраненный токен
+            remove("tokenEmail") // (опционально) Удаляем email пользователя, если он сохранен
+            apply()
+        }
+
+        // Переход на экран LoginFragment
+        findNavController().navigate(R.id.settings_to_login)
+
+        // (опционально) Сообщение об успешном выходе
+        Toast.makeText(requireContext(), "Вы вышли из аккаунта", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

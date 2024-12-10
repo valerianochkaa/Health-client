@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -16,20 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
 import com.example.health.data.pressures.PressuresDTO
-import com.example.health.data.pressures.PressuresList
-import com.example.health.data.temperatures.TemperaturesList
-import com.example.health.data.weights.WeightsList
 import com.example.health.databinding.FragmentPressureBinding
-import com.example.health.utils.RetrofitInstance
+import com.example.health.utils.RetrofitClient
 import com.example.health.utils.SwipeToDeleteCallback
 import com.example.myhealth.ui.adapters.PressureAdapter
-import com.example.myhealth.ui.adapters.TemperatureAdapter
-import com.example.myhealth.ui.adapters.WeightAdapter
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.ArrayList
-import java.util.Date
-import java.util.Locale
 
 
 class PressureFragment : Fragment(R.layout.fragment_pressure) {
@@ -86,7 +76,7 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
     private fun fetchPressures() {
         lifecycleScope.launch {
             try {
-                val pressures = RetrofitInstance.apiPressures.getAllPressures()
+                val pressures = RetrofitClient.apiPressures.getAllPressures()
                 pressureList.clear()
                 pressureList.addAll(pressures)
                 adapter.updateData(pressureList)
@@ -107,7 +97,7 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
 
         lifecycleScope.launch {
             try {
-                val addedPressure = RetrofitInstance.apiPressures.insertPressureAndGetId(newPressure)
+                val addedPressure = RetrofitClient.apiPressures.insertPressureAndGetId(newPressure)
                 pressureList.add(addedPressure)
                 adapter.updateData(pressureList)
             } catch (e: Exception) {
@@ -119,7 +109,7 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
     private fun deletePressure(pressureId: Int) {
         lifecycleScope.launch {
             try {
-                RetrofitInstance.apiPressures.deletePressureById(pressureId)
+                RetrofitClient.apiPressures.deletePressureById(pressureId)
                 pressureList.removeAll { it.pressureId == pressureId }
                 adapter.updateData(pressureList)
             } catch (e: Exception) {

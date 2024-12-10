@@ -13,10 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.health.R
 import com.example.health.data.drugLike.DrugWithLikeStatus
 import com.example.health.databinding.FragmentDrugsBinding
-import com.example.health.utils.RetrofitInstance
+import com.example.health.utils.RetrofitClient
 import com.example.myhealth.ui.adapters.DrugsAdapter
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 class DrugsFragment : Fragment(R.layout.fragment_drugs) {
     private var _binding: FragmentDrugsBinding? = null
@@ -83,7 +82,7 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
         lifecycleScope.launch {
             try {
                 val likedDrugIds = getLikedDrugIds(userId)
-                val drugs = RetrofitInstance.drugsApi.getAllDrugs()
+                val drugs = RetrofitClient.drugsApi.getAllDrugs()
                 allDrugsList.clear()
                 allDrugsList.addAll(drugs.map { DrugWithLikeStatus(it, likedDrugIds.contains(it.drugId)) })
                 filteredDrugsList.clear()
@@ -105,7 +104,7 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
 
     private suspend fun getLikedDrugIds(userId: Int): Set<Int> {
         return try {
-            RetrofitInstance.drugLikeApi.getDrugLikesByUser(userId).map { it.drugId }.toSet()
+            RetrofitClient.drugLikeApi.getDrugLikesByUser(userId).map { it.drugId }.toSet()
         } catch (e: Exception) {
             Log.e("DrugsFragment", "Error fetching liked drug ids", e)
             emptySet()

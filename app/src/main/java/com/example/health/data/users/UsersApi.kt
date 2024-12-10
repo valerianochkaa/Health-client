@@ -7,6 +7,8 @@ import retrofit2.http.POST
 interface UsersApi {
     @POST("login")
     fun loginUser(@Body userCredentials: UserCredentials): Call<LoginResponse>
+    @POST("register")
+    fun registerUser(@Body userCredentials: UserCredentials): Call<LoginResponse>
 }
 
 data class UserCredentials(
@@ -15,6 +17,9 @@ data class UserCredentials(
 )
 
 data class LoginResponse(
+    val token: String
+)
+data class RegisterResponse(
     val token: String
 )
 

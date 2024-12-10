@@ -10,14 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
 import com.example.health.data.drugs.DrugsDTO
-import com.example.health.data.drugs.DrugsList
-import com.example.health.data.weights.WeightsDTO
-import com.example.health.utils.RetrofitInstance
+import com.example.health.utils.RetrofitClient
 import androidx.lifecycle.lifecycleScope
 import com.example.health.data.drugLike.DrugWithLikeStatus
 import kotlinx.coroutines.launch
@@ -66,7 +63,7 @@ class DrugsAdapter(
         val drugId = drug.drugId ?: return
         lifecycleOwner.lifecycleScope.launch {
             try {
-                val drugInstructions = RetrofitInstance.drugInstructionsApi.getDrugInstructionByDrugId(drugId)
+                val drugInstructions = RetrofitClient.drugInstructionsApi.getDrugInstructionByDrugId(drugId)
 
                 val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_instruction, null)
                 val dialogBuilder = AlertDialog.Builder(context)

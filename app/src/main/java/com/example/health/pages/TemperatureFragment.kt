@@ -15,9 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
 import com.example.health.data.temperatures.TemperaturesDTO
-import com.example.health.data.temperatures.TemperaturesList
 import com.example.health.databinding.FragmentTemperatureBinding
-import com.example.health.utils.RetrofitInstance
+import com.example.health.utils.RetrofitClient
 import com.example.health.utils.SwipeToDeleteCallback
 import com.example.myhealth.ui.adapters.TemperatureAdapter
 import kotlinx.coroutines.launch
@@ -76,7 +75,7 @@ class TemperatureFragment : Fragment(R.layout.fragment_temperature) {
     private fun fetchTemperatures() {
         lifecycleScope.launch {
             try {
-                val temperatures = RetrofitInstance.apiTemperatures.getAllTemperatures()
+                val temperatures = RetrofitClient.apiTemperatures.getAllTemperatures()
                 temperatureList.clear()
                 temperatureList.addAll(temperatures)
                 adapter.updateData(temperatureList)
@@ -91,7 +90,7 @@ class TemperatureFragment : Fragment(R.layout.fragment_temperature) {
 
         lifecycleScope.launch {
             try {
-                val addedTemperature = RetrofitInstance.apiTemperatures.insertTemperatureAndGetId(newTemperature)
+                val addedTemperature = RetrofitClient.apiTemperatures.insertTemperatureAndGetId(newTemperature)
                 temperatureList.add(addedTemperature)
                 adapter.updateData(temperatureList)
             } catch (e: Exception) {
@@ -103,7 +102,7 @@ class TemperatureFragment : Fragment(R.layout.fragment_temperature) {
     private fun deleteTemperature(temperatureId: Int) {
         lifecycleScope.launch {
             try {
-                RetrofitInstance.apiTemperatures.deleteTemperatureById(temperatureId)
+                RetrofitClient.apiTemperatures.deleteTemperatureById(temperatureId)
                 temperatureList.removeAll { it.temperatureId == temperatureId }
                 adapter.updateData(temperatureList)
             } catch (e: Exception) {

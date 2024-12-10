@@ -9,16 +9,13 @@ import android.view.ViewGroup
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.health.R
-import com.example.health.data.drugLike.DrugLikeApi
 import com.example.health.data.drugLike.DrugWithLikeStatus
 import com.example.health.data.drugs.DrugsDTO
-import com.example.health.data.drugs.DrugsList
 import com.example.health.databinding.FragmentLikesBinding
-import com.example.health.utils.RetrofitInstance
-import com.example.health.utils.RetrofitInstance.drugLikeApi
+import com.example.health.utils.RetrofitClient
+import com.example.health.utils.RetrofitClient.drugLikeApi
 import com.example.myhealth.ui.adapters.DrugsAdapter
 import kotlinx.coroutines.launch
-import java.util.ArrayList
 
 class LikesFragment : Fragment(R.layout.fragment_likes) {
     private var _binding: FragmentLikesBinding? = null
@@ -66,7 +63,7 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
 
     private suspend fun fetchDrugDetails(drugId: Int): DrugsDTO? {
         return runCatching {
-            RetrofitInstance.drugsApi.getDrugById(drugId)
+            RetrofitClient.drugsApi.getDrugById(drugId)
         }.onFailure { e ->
             Log.e("LikesFragment", "Error fetching drug details for ID $drugId", e)
         }.getOrNull()

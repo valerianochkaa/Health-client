@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
 import com.example.health.data.weights.WeightsDTO
 import com.example.health.databinding.FragmentWeightBinding
-import com.example.health.utils.RetrofitInstance
+import com.example.health.utils.RetrofitClient
 import com.example.health.utils.SwipeToDeleteCallback
 import com.example.myhealth.ui.adapters.WeightAdapter
 import kotlinx.coroutines.launch
@@ -77,7 +77,7 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
     private fun fetchWeights() {
         lifecycleScope.launch {
             try {
-                val weights = RetrofitInstance.apiWeights.getAllWeights()
+                val weights = RetrofitClient.apiWeights.getAllWeights()
                 weightList.clear()
                 weightList.addAll(weights)
                 adapter.updateData(weightList)
@@ -107,7 +107,7 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
 
             lifecycleScope.launch {
                 try {
-                    val addedWeight = RetrofitInstance.apiWeights.insertWeightAndGetId(newWeight)
+                    val addedWeight = RetrofitClient.apiWeights.insertWeightAndGetId(newWeight)
                     weightList.add(addedWeight)
                     adapter.updateData(weightList)
                     binding.editValue.text.clear()
@@ -126,7 +126,7 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
     private fun deleteWeight(weightId: Int) {
         lifecycleScope.launch {
             try {
-                RetrofitInstance.apiWeights.deleteWeightById(weightId)
+                RetrofitClient.apiWeights.deleteWeightById(weightId)
                 weightList.removeAll { it.weightId == weightId }
                 adapter.updateData(weightList)
             } catch (e: Exception) {

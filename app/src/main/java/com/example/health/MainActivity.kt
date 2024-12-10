@@ -1,38 +1,36 @@
 package com.example.health
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.database.tokens.TokenDTO
+import com.example.health.utils.RetrofitClient
 import com.example.health.utils.ThemeUtils
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    // Navigation Component
     private lateinit var navController: NavController
     private lateinit var navView: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Dark Theme
-        ThemeUtils.applyTheme(this)
-
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        ThemeUtils.applyTheme(this)
         setContentView(R.layout.activity_main)
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
         navController = findNavController(R.id.navHostFragment)
         navView = findViewById(R.id.bottomNavigation)
+
+        // Проверка токена
+        checkTokenAndNavigate()
 
         navView.setupWithNavController(navController)
 
@@ -58,7 +56,43 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkTokenAndNavigate() {
+        // Получаем сохраненные данные токена из SharedPreferences
+        val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val tokenId = sharedPreferences.getString("tokenId", null)
+        val tokenEmail = sharedPreferences.getString("tokenEmail", null)
+        val token = sharedPreferences.getString("token", null)
+
+        if (tokenId != null && tokenEmail != null && token != null) {
+            // Если токен существует, проверяем его валидность через API
+            lifecycleScope.launch {
+                try {
+                    val response = RetrofitClient.tokenApi.checkToken(
+                        TokenDTO(tokenId, tokenEmail, token)
+                    )
+                    if (response.valid) {
+                        // Токен валиден, переходим на DrugsCategoryFragment
+                        navController.navigate(R.id.drugsCategoryFragment)
+                    } else {
+                        // Токен невалиден, переходим на LoginFragment
+                        navController.navigate(R.id.loginFragment)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    // В случае ошибки также переходим на LoginFragment
+                    navController.navigate(R.id.loginFragment)
+                }
+            }
+        } else {
+            // Если токена нет, переходим на LoginFragment
+            navController.navigate(R.id.loginFragment)
+        }
+    }
+
     fun setActiveMenuItem(itemId: Int) {
         navView.selectedItemId = itemId
     }
 }
+
+
+
