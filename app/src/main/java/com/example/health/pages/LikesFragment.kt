@@ -21,57 +21,60 @@ import kotlinx.coroutines.launch
 import java.util.ArrayList
 
 class LikesFragment : Fragment(R.layout.fragment_likes) {
-    // View binding
     private var _binding: FragmentLikesBinding? = null
     private val binding get() = _binding!!
-
-    // Recycler View
-    private var drugsList = ArrayList<DrugWithLikeStatus>()
+    private var drugsList = mutableListOf<DrugWithLikeStatus>()
     private lateinit var adapter: DrugsAdapter
     private val userId = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentLikesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // RecyclerView
+        setupRecyclerView()
+        fetchLikedDrugs()
+    }
+
+    private fun setupRecyclerView() {
         adapter = DrugsAdapter(drugsList, requireContext(), viewLifecycleOwner)
         binding.recycler.layoutManager = LinearLayoutManager(context)
         binding.recycler.adapter = adapter
-        fetchLikedDrugs()
     }
 
     private fun fetchLikedDrugs() {
         viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val likedDrugs = drugLikeApi.getDrugLikesByUser(userId)
-                for (likedDrug in likedDrugs) {
-                    val drugDetails = fetchDrugDetails(likedDrug.drugId)
-                    if (drugDetails != null) {
-                        // Create an instance of DrugWithLikeStatus
-                        drugsList.add(DrugWithLikeStatus(drugDetails, true))
-                    }
+            runCatching {
+                drugLikeApi.getDrugLikesByUser(userId)
+            }.onSuccess { likedDrugs ->
+                val drugDetailsList = likedDrugs.mapNotNull { likedDrug ->
+                    fetchDrugDetails(likedDrug.drugId)
                 }
+                drugsList.clear()
+                drugsList.addAll(drugDetailsList.map { DrugWithLikeStatus(it, true) })
                 adapter.notifyDataSetChanged()
-            } catch (e: Exception) {
+            }.onFailure { e ->
                 Log.e("LikesFragment", "Error fetching liked drugs", e)
             }
         }
     }
 
     private suspend fun fetchDrugDetails(drugId: Int): DrugsDTO? {
-        return try {
-            val drugApiResponse = RetrofitInstance.drugsApi.getDrugById(drugId)
-            drugApiResponse
-        } catch (e: Exception) {
+        return runCatching {
+            RetrofitInstance.drugsApi.getDrugById(drugId)
+        }.onFailure { e ->
             Log.e("LikesFragment", "Error fetching drug details for ID $drugId", e)
-            null
-        }
+        }.getOrNull()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
+
