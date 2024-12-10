@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -20,6 +21,9 @@ import com.example.health.utils.RetrofitClient
 import com.example.health.utils.SwipeToDeleteCallback
 import com.example.myhealth.ui.adapters.PressureAdapter
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 class PressureFragment : Fragment(R.layout.fragment_pressure) {
@@ -76,33 +80,72 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
     private fun fetchPressures() {
         lifecycleScope.launch {
             try {
+                // Запрос на сервер для получения всех записей давления
                 val pressures = RetrofitClient.pressuresApi.getAllPressures()
-                pressureList.clear()
-                pressureList.addAll(pressures)
-                adapter.updateData(pressureList)
+                pressureList.clear() // Очистка текущего списка
+                pressureList.addAll(pressures) // Добавление новых данных
+                adapter.updateData(pressureList) // Обновление данных в адаптере
             } catch (e: Exception) {
                 Log.e("PressureFragment", "Error fetching pressures", e)
+                Toast.makeText(context, "Ошибка при загрузке данных давления", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     private fun addPressure() {
-        val newPressure = PressuresDTO(
-            userIdPressure = 1,
-            upperValue = 120,
-            lowerValue = 80,
-            pulseValue = 75,
-            recordDate = "2023-10-01"
-        )
+        val upperValueInput = binding.editValue1.text.toString()
+        val lowerValueInput = binding.editValue2.text.toString()
+        val pulseValueInput = binding.editValue3.text.toString()
 
-        lifecycleScope.launch {
-            try {
-                val addedPressure = RetrofitClient.pressuresApi.insertPressureAndGetId(newPressure)
-                pressureList.add(addedPressure)
-                adapter.updateData(pressureList)
-            } catch (e: Exception) {
-                Log.e("PressureFragment", "Error adding pressure", e)
+        if (upperValueInput.isEmpty() || lowerValueInput.isEmpty() || pulseValueInput.isEmpty()) {
+            Toast.makeText(context, "Заполните все поля", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
+            // Форматирование текущей даты
+            val currentDate = SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale("ru", "RU")).format(
+                Date()
+            )
+
+            // Создание нового объекта давления
+            val newPressure = PressuresDTO(
+                userIdPressure = 1, // ID пользователя (заменить на актуальный)
+                upperValue = upperValueInput.toInt(), // Верхнее значение давления
+                lowerValue = lowerValueInput.toInt(), // Нижнее значение давления
+                pulseValue = pulseValueInput.toInt(), // Пульс
+                recordDate = currentDate
+            )
+
+            // Получение токена из SharedPreferences
+            val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            val token = sharedPreferences.getString("token", null)
+
+            if (token.isNullOrEmpty()) {
+                Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
+                return
             }
+
+            Log.d("PressureFragment", "Sending pressure: $newPressure with token: $token")
+
+            lifecycleScope.launch {
+                try {
+                    // Отправка новой записи давления на сервер и получение добавленного объекта
+                    val addedPressure = RetrofitClient.pressuresApi.insertPressureAndGetId(newPressure, "Bearer $token")
+                    pressureList.add(addedPressure) // Добавление новой записи в список
+                    adapter.updateData(pressureList) // Обновление данных в адаптере
+
+                    // Очистка полей ввода после успешного добавления
+                    binding.editValue1.text.clear()
+                    binding.editValue2.text.clear()
+                    binding.editValue3.text.clear()
+                } catch (e: Exception) {
+                    Log.e("PressureFragment", "Error adding pressure", e)
+                    Toast.makeText(context, "Ошибка при добавлении записи давления", Toast.LENGTH_SHORT).show()
+                }
+            }
+        } catch (e: NumberFormatException) {
+            Toast.makeText(context, "Некорректный ввод значений", Toast.LENGTH_SHORT).show()
         }
     }
 
