@@ -11,6 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.health.R
+import com.example.health.data.drugLike.DrugWithLikeStatus
 import com.example.health.data.drugs.DrugsDTO
 import com.example.health.databinding.FragmentDrugsBinding
 import com.example.health.utils.RetrofitInstance
@@ -19,13 +20,11 @@ import kotlinx.coroutines.launch
 import java.util.Locale
 
 class DrugsFragment : Fragment(R.layout.fragment_drugs) {
-    // View binding
     private var _binding: FragmentDrugsBinding? = null
     private val binding get() = _binding!!
 
-    // Recycler View
-    private var allDrugsList = mutableListOf<DrugsDTO>()
-    private var filteredDrugsList = mutableListOf<DrugsDTO>()
+    private var allDrugsList = mutableListOf<DrugWithLikeStatus>()
+    private var filteredDrugsList = mutableListOf<DrugWithLikeStatus>()
     private lateinit var adapter: DrugsAdapter
 
     override fun onCreateView(
@@ -67,8 +66,8 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
 
     private fun filterList(query: String?) {
         if (query != null && query.isNotEmpty()) {
-            val filteredList = filteredDrugsList.filter { drug ->
-                drug.drugName.lowercase(Locale.ROOT).contains(query.lowercase(Locale.ROOT))
+            val filteredList = allDrugsList.filter { drugWithLikeStatus ->
+                drugWithLikeStatus.drug.drugName.lowercase(Locale.ROOT).contains(query.lowercase(Locale.ROOT))
             }
 
             if (filteredList.isEmpty()) {
@@ -82,23 +81,31 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
         } else {
             binding.textBlank.visibility = View.GONE
             binding.recycler.visibility = View.VISIBLE
-            adapter.updateData(filteredDrugsList)
+            adapter.updateData(allDrugsList)
         }
     }
 
     private fun fetchDrugs(categoryName: String?) {
         lifecycleScope.launch {
             try {
+                val userId = 1 // Замените на актуальный идентификатор пользователя
+                val likedDrugIds = getLikedDrugIds(userId)
+
                 val drugs = RetrofitInstance.drugsApi.getAllDrugs()
                 allDrugsList.clear()
-                allDrugsList.addAll(drugs)
+                allDrugsList.addAll(drugs.map { drug ->
+                    DrugWithLikeStatus(drug, likedDrugIds.contains(drug.drugId))
+                })
+
                 filteredDrugsList.clear()
-                filteredDrugsList.addAll(when (categoryName) {
-                    "Таблетки" -> allDrugsList.filter { it.drugCategoryId == 1 }
-                    "Спреи" -> allDrugsList.filter { it.drugCategoryId == 2 }
-                    "Мази" -> allDrugsList.filter { it.drugCategoryId == 3 }
-                    "Уколы" -> allDrugsList.filter { it.drugCategoryId == 4 }
-                    else -> emptyList()
+                filteredDrugsList.addAll(allDrugsList.filter { drugWithLikeStatus ->
+                    when (categoryName) {
+                        "Таблетки" -> drugWithLikeStatus.drug.drugCategoryId == 1
+                        "Спреи" -> drugWithLikeStatus.drug.drugCategoryId == 2
+                        "Мази" -> drugWithLikeStatus.drug.drugCategoryId == 3
+                        "Уколы" -> drugWithLikeStatus.drug.drugCategoryId == 4
+                        else -> true // Если категория не распознана, показываем все лекарства
+                    }
                 })
 
                 adapter.updateData(filteredDrugsList)
@@ -107,8 +114,17 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
             }
         }
     }
-}
 
+    suspend fun getLikedDrugIds(userId: Int): Set<Int> {
+        return try {
+            val likedDrugs = RetrofitInstance.drugLikeApi.getDrugLikesByUser(userId)
+            likedDrugs.map { it.drugId }.toSet()
+        } catch (e: Exception) {
+            Log.e("DrugsFragment", "Error fetching liked drug ids", e)
+            emptySet()
+        }
+    }
+}
 
 
 

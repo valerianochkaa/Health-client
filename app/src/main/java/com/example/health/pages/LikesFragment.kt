@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.health.R
 import com.example.health.data.drugLike.DrugLikeApi
+import com.example.health.data.drugLike.DrugWithLikeStatus
 import com.example.health.data.drugs.DrugsDTO
 import com.example.health.data.drugs.DrugsList
 import com.example.health.databinding.FragmentLikesBinding
@@ -25,7 +26,7 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
     private val binding get() = _binding!!
 
     // Recycler View
-    private var drugsList = ArrayList<DrugsDTO>()
+    private var drugsList = ArrayList<DrugWithLikeStatus>()
     private lateinit var adapter: DrugsAdapter
     private val userId = 1
 
@@ -36,6 +37,7 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
         _binding = FragmentLikesBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // RecyclerView
@@ -44,6 +46,7 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
         binding.recycler.adapter = adapter
         fetchLikedDrugs()
     }
+
     private fun fetchLikedDrugs() {
         viewLifecycleOwner.lifecycleScope.launch {
             try {
@@ -51,7 +54,8 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
                 for (likedDrug in likedDrugs) {
                     val drugDetails = fetchDrugDetails(likedDrug.drugId)
                     if (drugDetails != null) {
-                        drugsList.add(drugDetails)
+                        // Create an instance of DrugWithLikeStatus
+                        drugsList.add(DrugWithLikeStatus(drugDetails, true))
                     }
                 }
                 adapter.notifyDataSetChanged()
@@ -60,6 +64,7 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
             }
         }
     }
+
     private suspend fun fetchDrugDetails(drugId: Int): DrugsDTO? {
         return try {
             val drugApiResponse = RetrofitInstance.drugsApi.getDrugById(drugId)
@@ -70,4 +75,3 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
         }
     }
 }
-

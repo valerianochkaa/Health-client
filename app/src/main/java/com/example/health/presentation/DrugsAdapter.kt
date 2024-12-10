@@ -19,32 +19,46 @@ import com.example.health.data.drugs.DrugsList
 import com.example.health.data.weights.WeightsDTO
 import com.example.health.utils.RetrofitInstance
 import androidx.lifecycle.lifecycleScope
+import com.example.health.data.drugLike.DrugWithLikeStatus
 import kotlinx.coroutines.launch
 
 class DrugsAdapter(
-    private var drugsList: List<DrugsDTO>,
+    private var drugsList: List<DrugWithLikeStatus>,
     private val context: Context,
     private val lifecycleOwner: LifecycleOwner
 ) : RecyclerView.Adapter<DrugsAdapter.DrugsViewHolder>() {
+
     inner class DrugsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView = itemView.findViewById(R.id.name)
         val btnInfo: ImageView = itemView.findViewById(R.id.btnInfo)
         val btnLike: ImageView = itemView.findViewById(R.id.btnLike)
     }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrugsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drugs_search, parent, false)
         return DrugsViewHolder(view)
     }
+
     override fun onBindViewHolder(holder: DrugsViewHolder, position: Int) {
-        val drug = drugsList[position]
+        val drugWithLikeStatus = drugsList[position]
+        val drug = drugWithLikeStatus.drug
         holder.name.text = drug.drugName
         holder.btnInfo.setOnClickListener {
             showDialog(drug)
         }
+        holder.btnLike.setImageResource(
+            if (drugWithLikeStatus.isLiked) R.drawable.ic_favorite_like
+            else R.drawable.ic_favorite
+        )
     }
-    fun updateData(newDrugsList: List<DrugsDTO>) {
+
+    fun updateData(newDrugsList: List<DrugWithLikeStatus>) {
         drugsList = newDrugsList
         notifyDataSetChanged()
+    }
+
+    override fun getItemCount(): Int {
+        return drugsList.size
     }
 
     private fun showDialog(drug: DrugsDTO) {
@@ -87,26 +101,6 @@ class DrugsAdapter(
         }
     }
 
-    override fun getItemCount(): Int {
-        return drugsList.size
-    }
 }
 
-//        if (favoriteDrugs.contains(drug)) {
-//            holder.btnLike.setImageResource(R.drawable.ic_favorite_like)
-//        } else {
-//            holder.btnLike.setImageResource(R.drawable.ic_favorite)
-//        }
-
-//        holder.btnLike.setOnClickListener {
-//            if (drug.like) {
-//                if (favoriteDrugs.contains(drug)) {
-//                    favoriteDrugs.remove(drug)
-//                    holder.btnLike.setImageResource(R.drawable.ic_favorite)
-//                } else {
-//                    favoriteDrugs.add(drug)
-//                    holder.btnLike.setImageResource(R.drawable.ic_favorite_like)
-//                }
-//            }
-//        }
 
