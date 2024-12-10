@@ -5,6 +5,7 @@ import com.example.health.data.drugs.DrugsApi
 import com.example.health.data.drugsInstrucions.DrugInstructionsApi
 import com.example.health.data.pressures.PressuresApi
 import com.example.health.data.temperatures.TemperaturesApi
+import com.example.health.data.users.UsersApi
 import com.example.health.data.weights.WeightsApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -17,6 +18,9 @@ object RetrofitInstance {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+    val userApi: UsersApi by lazy {
+        retrofit.create(UsersApi::class.java)
     }
     val drugLikeApi: DrugLikeApi by lazy {
         retrofit.create(DrugLikeApi::class.java)
@@ -36,5 +40,4 @@ object RetrofitInstance {
     val drugInstructionsApi: DrugInstructionsApi by lazy {
         retrofit.create(DrugInstructionsApi::class.java)
     }
-
 }
