@@ -43,7 +43,6 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
         binding.btnBack.setOnClickListener {
             findNavController().navigate(R.id.drugs_to_drugs_category)
         }
-
         val categoryName = requireArguments().getString("categoryName")
         binding.textCategoryName.text = categoryName
 
@@ -67,7 +66,7 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
     }
 
     private fun filterList(query: String?) {
-        if (query != null) {
+        if (query != null && query.isNotEmpty()) {
             val filteredList = filteredDrugsList.filter { drug ->
                 drug.drugName.lowercase(Locale.ROOT).contains(query.lowercase(Locale.ROOT))
             }
@@ -78,10 +77,9 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
             } else {
                 binding.textBlank.visibility = View.GONE
                 binding.recycler.visibility = View.VISIBLE
-                adapter.updateData(filteredDrugsList)
+                adapter.updateData(filteredList)
             }
         } else {
-            // Если запрос пустой, показываем весь список для выбранной категории
             binding.textBlank.visibility = View.GONE
             binding.recycler.visibility = View.VISIBLE
             adapter.updateData(filteredDrugsList)
@@ -94,8 +92,6 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
                 val drugs = RetrofitInstance.drugsApi.getAllDrugs()
                 allDrugsList.clear()
                 allDrugsList.addAll(drugs)
-
-                // Фильтруем лекарства по категории и сохраняем в filteredDrugsList
                 filteredDrugsList.clear()
                 filteredDrugsList.addAll(when (categoryName) {
                     "Таблетки" -> allDrugsList.filter { it.drugCategoryId == 1 }

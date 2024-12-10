@@ -42,11 +42,6 @@ class DrugsAdapter(
             showDialog(drug)
         }
     }
-
-    override fun getItemCount(): Int {
-        return drugsList.size
-    }
-
     fun updateData(newDrugsList: List<DrugsDTO>) {
         drugsList = newDrugsList
         notifyDataSetChanged()
@@ -90,6 +85,10 @@ class DrugsAdapter(
                 Log.e("DrugsAdapter", "Error fetching drug instructions", e)
             }
         }
+    }
+
+    override fun getItemCount(): Int {
+        return drugsList.size
     }
 }
 
