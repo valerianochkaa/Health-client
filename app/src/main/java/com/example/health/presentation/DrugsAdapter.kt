@@ -32,6 +32,7 @@ class DrugsAdapter(
         val name: TextView = itemView.findViewById(R.id.name)
         val btnInfo: ImageView = itemView.findViewById(R.id.btnInfo)
         val btnLike: ImageView = itemView.findViewById(R.id.btnLike)
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrugsViewHolder {
@@ -100,7 +101,6 @@ class DrugsAdapter(
             }
         }
     }
-
 }
 
 

@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.health.R
 import com.example.health.data.drugLike.DrugWithLikeStatus
-import com.example.health.data.drugs.DrugsDTO
 import com.example.health.databinding.FragmentDrugsBinding
 import com.example.health.utils.RetrofitInstance
 import com.example.myhealth.ui.adapters.DrugsAdapter
@@ -26,6 +25,7 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
     private var allDrugsList = mutableListOf<DrugWithLikeStatus>()
     private var filteredDrugsList = mutableListOf<DrugWithLikeStatus>()
     private lateinit var adapter: DrugsAdapter
+    private val userId = 1
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +37,6 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         // Navigation Component
         binding.btnBack.setOnClickListener {
             findNavController().navigate(R.id.drugs_to_drugs_category)
@@ -56,20 +55,17 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
-
             override fun onQueryTextChange(newText: String?): Boolean {
                 filterList(newText)
                 return true
             }
         })
     }
-
     private fun filterList(query: String?) {
         if (query != null && query.isNotEmpty()) {
-            val filteredList = allDrugsList.filter { drugWithLikeStatus ->
+            val filteredList = filteredDrugsList.filter { drugWithLikeStatus ->
                 drugWithLikeStatus.drug.drugName.lowercase(Locale.ROOT).contains(query.lowercase(Locale.ROOT))
             }
-
             if (filteredList.isEmpty()) {
                 binding.textBlank.visibility = View.VISIBLE
                 binding.recycler.visibility = View.GONE
@@ -81,22 +77,18 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
         } else {
             binding.textBlank.visibility = View.GONE
             binding.recycler.visibility = View.VISIBLE
-            adapter.updateData(allDrugsList)
+            adapter.updateData(filteredDrugsList)
         }
     }
-
     private fun fetchDrugs(categoryName: String?) {
         lifecycleScope.launch {
             try {
-                val userId = 1 // Замените на актуальный идентификатор пользователя
                 val likedDrugIds = getLikedDrugIds(userId)
-
                 val drugs = RetrofitInstance.drugsApi.getAllDrugs()
                 allDrugsList.clear()
                 allDrugsList.addAll(drugs.map { drug ->
                     DrugWithLikeStatus(drug, likedDrugIds.contains(drug.drugId))
                 })
-
                 filteredDrugsList.clear()
                 filteredDrugsList.addAll(allDrugsList.filter { drugWithLikeStatus ->
                     when (categoryName) {
@@ -104,17 +96,15 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
                         "Спреи" -> drugWithLikeStatus.drug.drugCategoryId == 2
                         "Мази" -> drugWithLikeStatus.drug.drugCategoryId == 3
                         "Уколы" -> drugWithLikeStatus.drug.drugCategoryId == 4
-                        else -> true // Если категория не распознана, показываем все лекарства
+                        else -> true
                     }
                 })
-
                 adapter.updateData(filteredDrugsList)
             } catch (e: Exception) {
                 Log.e("DrugsFragment", "Error fetching drugs", e)
             }
         }
     }
-
     suspend fun getLikedDrugIds(userId: Int): Set<Int> {
         return try {
             val likedDrugs = RetrofitInstance.drugLikeApi.getDrugLikesByUser(userId)
