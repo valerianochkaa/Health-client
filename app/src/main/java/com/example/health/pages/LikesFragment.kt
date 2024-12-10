@@ -34,15 +34,15 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView()
+//        setupRecyclerView()
         fetchLikedDrugs()
     }
 
-    private fun setupRecyclerView() {
-        adapter = DrugsAdapter(drugsList, requireContext(), viewLifecycleOwner)
-        binding.recycler.layoutManager = LinearLayoutManager(context)
-        binding.recycler.adapter = adapter
-    }
+//    private fun setupRecyclerView() {
+//        adapter = DrugsAdapter(drugsList, requireContext(), viewLifecycleOwner)
+//        binding.recycler.layoutManager = LinearLayoutManager(context)
+//        binding.recycler.adapter = adapter
+//    }
 
     private fun fetchLikedDrugs() {
         viewLifecycleOwner.lifecycleScope.launch {

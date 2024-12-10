@@ -1,10 +1,12 @@
 package com.example.health.pages
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -50,10 +52,32 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
     }
 
     private fun setupRecyclerView() {
-        adapter = DrugsAdapter(emptyList(), requireContext(), this)
+        // Получаем токен авторизации из SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("token", null)
+        if (token.isNullOrEmpty()) {
+            Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Используем готовый экземпляр API из RetrofitClient
+        val drugLikeApi = RetrofitClient.drugLikeApi // Или создайте отдельный DrugLikeApi, если это другой интерфейс
+
+        // Создаем адаптер с передачей необходимых параметров
+        adapter = DrugsAdapter(
+            drugsList = allDrugsList, // Список данных
+            context = requireContext(), // Контекст
+            lifecycleOwner = viewLifecycleOwner, // LifecycleOwner для корутин
+            drugLikeApi = drugLikeApi, // Экземпляр API
+            token = "Bearer $token" // Передаем токен с приставкой "Bearer"
+        )
+
+        // Настройка RecyclerView
         binding.recycler.layoutManager = LinearLayoutManager(context)
         binding.recycler.adapter = adapter
     }
+
+
 
     private fun setupSearchView() {
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
