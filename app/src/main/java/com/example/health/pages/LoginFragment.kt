@@ -36,7 +36,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Проверка токена при запуске
         if (isUserLoggedIn()) {
             navigateToDrugsCategory()
             return
@@ -81,11 +80,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     response.body()?.let {
                         token = it.token
                         Log.d("LoginFragment", "Authorization successful! Token: $token")
-
-                        // Сохранение токена в SharedPreferences
                         saveToken(it.token, email)
-
-                        // Переход на DrugsCategoryFragment
                         navigateToDrugsCategory()
                     }
                 } else {

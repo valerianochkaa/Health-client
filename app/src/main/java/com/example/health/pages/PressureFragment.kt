@@ -76,7 +76,7 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
     private fun fetchPressures() {
         lifecycleScope.launch {
             try {
-                val pressures = RetrofitClient.apiPressures.getAllPressures()
+                val pressures = RetrofitClient.pressuresApi.getAllPressures()
                 pressureList.clear()
                 pressureList.addAll(pressures)
                 adapter.updateData(pressureList)
@@ -97,7 +97,7 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
 
         lifecycleScope.launch {
             try {
-                val addedPressure = RetrofitClient.apiPressures.insertPressureAndGetId(newPressure)
+                val addedPressure = RetrofitClient.pressuresApi.insertPressureAndGetId(newPressure)
                 pressureList.add(addedPressure)
                 adapter.updateData(pressureList)
             } catch (e: Exception) {
@@ -109,7 +109,7 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
     private fun deletePressure(pressureId: Int) {
         lifecycleScope.launch {
             try {
-                RetrofitClient.apiPressures.deletePressureById(pressureId)
+                RetrofitClient.pressuresApi.deletePressureById(pressureId)
                 pressureList.removeAll { it.pressureId == pressureId }
                 adapter.updateData(pressureList)
             } catch (e: Exception) {

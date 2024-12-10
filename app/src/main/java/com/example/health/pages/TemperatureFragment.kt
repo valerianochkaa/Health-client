@@ -75,7 +75,7 @@ class TemperatureFragment : Fragment(R.layout.fragment_temperature) {
     private fun fetchTemperatures() {
         lifecycleScope.launch {
             try {
-                val temperatures = RetrofitClient.apiTemperatures.getAllTemperatures()
+                val temperatures = RetrofitClient.temperaturesApi.getAllTemperatures()
                 temperatureList.clear()
                 temperatureList.addAll(temperatures)
                 adapter.updateData(temperatureList)
@@ -90,7 +90,7 @@ class TemperatureFragment : Fragment(R.layout.fragment_temperature) {
 
         lifecycleScope.launch {
             try {
-                val addedTemperature = RetrofitClient.apiTemperatures.insertTemperatureAndGetId(newTemperature)
+                val addedTemperature = RetrofitClient.temperaturesApi.insertTemperatureAndGetId(newTemperature)
                 temperatureList.add(addedTemperature)
                 adapter.updateData(temperatureList)
             } catch (e: Exception) {
@@ -102,7 +102,7 @@ class TemperatureFragment : Fragment(R.layout.fragment_temperature) {
     private fun deleteTemperature(temperatureId: Int) {
         lifecycleScope.launch {
             try {
-                RetrofitClient.apiTemperatures.deleteTemperatureById(temperatureId)
+                RetrofitClient.temperaturesApi.deleteTemperatureById(temperatureId)
                 temperatureList.removeAll { it.temperatureId == temperatureId }
                 adapter.updateData(temperatureList)
             } catch (e: Exception) {

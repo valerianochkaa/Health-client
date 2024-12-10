@@ -26,17 +26,16 @@ object RetrofitClient {
     val userApi: UsersApi by lazy {
         retrofit.create(UsersApi::class.java)
     }
-
     val drugLikeApi: DrugLikeApi by lazy {
         retrofit.create(DrugLikeApi::class.java)
     }
-    val apiWeights: WeightsApi by lazy {
+    val weightsApi: WeightsApi by lazy {
         retrofit.create(WeightsApi::class.java)
     }
-    val apiTemperatures: TemperaturesApi by lazy {
+    val temperaturesApi: TemperaturesApi by lazy {
         retrofit.create(TemperaturesApi::class.java)
     }
-    val apiPressures: PressuresApi by lazy {
+    val pressuresApi: PressuresApi by lazy {
         retrofit.create(PressuresApi::class.java)
     }
     val drugsApi: DrugsApi by lazy {

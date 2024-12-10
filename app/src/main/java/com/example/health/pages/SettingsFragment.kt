@@ -13,7 +13,6 @@ import com.example.health.databinding.FragmentSettingsBinding
 import com.example.health.utils.ThemeUtils
 
 class SettingsFragment : Fragment(R.layout.fragment_settings) {
-    // View binding
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
 
@@ -28,7 +27,6 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Dark Theme
         val sharedPreferences = requireContext().getSharedPreferences("theme_prefs", Context.MODE_PRIVATE)
         val isDarkMode = sharedPreferences.getBoolean("current_theme", false)
         binding.switchTheme.isChecked = isDarkMode
@@ -38,35 +36,26 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
             activity?.recreate()
         }
 
-        // Logout button logic
         binding.btnLogout.setOnClickListener {
             logoutUser()
         }
 
-        // Dialog
         binding.btnDialog.setOnClickListener {
             DialogAboutApp(
                 onSubmitClickListener = { quantity ->
-                    Toast.makeText(requireContext(), "2", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "DialogAboutApp", Toast.LENGTH_SHORT).show()
                 }
             ).show(parentFragmentManager, "dialog")
         }
     }
 
     private fun logoutUser() {
-        // Удаление токена из SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
-            remove("token") // Удаляем сохраненный токен
-            remove("tokenEmail") // (опционально) Удаляем email пользователя, если он сохранен
+            remove("token")
             apply()
         }
-
-        // Переход на экран LoginFragment
         findNavController().navigate(R.id.settings_to_login)
-
-        // (опционально) Сообщение об успешном выходе
-        Toast.makeText(requireContext(), "Вы вышли из аккаунта", Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroyView() {

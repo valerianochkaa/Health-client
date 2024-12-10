@@ -76,10 +76,11 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
                         val token = response.body()?.token // Предполагается, что LoginResponse имеет поле token
                         if (token != null) {
                             Log.d("RegistrationFragment", "Registration successful! Token: $token")
+                            saveToken(token) // Сохраняем токен в SharedPreferences
                         } else {
                             Log.e("RegistrationFragment", "Token is null")
                         }
-                        // Здесь можно обработать успешный ответ, например, сохранить токен
+                        // Переход на следующий экран
                         findNavController().navigate(R.id.registration_to_drugs_category)
                     }
                     response.code() == 400 -> {
@@ -102,9 +103,19 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
         })
     }
 
+    private fun saveToken(token: String) {
+        val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putString("token", token) // Сохраняем токен под ключом "token"
+            apply()
+        }
+        Log.d("RegistrationFragment", "Token saved successfully!")
+    }
+
     private fun showSnackbar(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_SHORT).show()
     }
+
     private fun hideKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         val view = activity?.currentFocus
@@ -118,4 +129,5 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
         _binding = null
     }
 }
+
 

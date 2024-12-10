@@ -26,11 +26,8 @@ import java.util.Date
 import java.util.Locale
 
 class WeightFragment : Fragment(R.layout.fragment_weight) {
-    // View Binding
     private var _binding: FragmentWeightBinding? = null
     private val binding get() = _binding!!
-
-    // Recycler View
     private lateinit var adapter: WeightAdapter
     private val weightList = mutableListOf<WeightsDTO>()
 
@@ -44,25 +41,17 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Navigation Component
         binding.btnBack.setOnClickListener {
             findNavController().navigate(R.id.weight_to_diary)
         }
-
-        // Recycler View
         binding.recycler.layoutManager = LinearLayoutManager(context)
         adapter = WeightAdapter(weightList, context) { weightId -> deleteWeight(weightId)}
         binding.recycler.adapter = adapter
         fetchWeights()
-
-        // SetOnClickListener - btnAdd
         binding.btnAdd.setOnClickListener {
             addWeight()
             hideKeyboard()
         }
-
-        // SwipeToDeleteCallback
         val swipeToDeleteCallback = object : SwipeToDeleteCallback() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
@@ -73,11 +62,10 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
         }
         ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding.recycler)
     }
-
     private fun fetchWeights() {
         lifecycleScope.launch {
             try {
-                val weights = RetrofitClient.apiWeights.getAllWeights()
+                val weights = RetrofitClient.weightsApi.getAllWeights()
                 weightList.clear()
                 weightList.addAll(weights)
                 adapter.updateData(weightList)
@@ -86,15 +74,12 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
             }
         }
     }
-
     private fun addWeight() {
         val weightInput = binding.editValue.text.toString()
-
         if (weightInput.isEmpty()) {
             Toast.makeText(context, "Введите вес", Toast.LENGTH_SHORT).show()
             return
         }
-
         try {
             val currentDate = SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale("ru", "RU")).format(Date())
             val newWeight = WeightsDTO(
@@ -102,12 +87,10 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
                 weightValue = weightInput.toDouble(),
                 recordDate = currentDate
             )
-
             Log.d("WeightFragment", "Sending weight: $newWeight")
-
             lifecycleScope.launch {
                 try {
-                    val addedWeight = RetrofitClient.apiWeights.insertWeightAndGetId(newWeight)
+                    val addedWeight = RetrofitClient.weightsApi.insertWeightAndGetId(newWeight)
                     weightList.add(addedWeight)
                     adapter.updateData(weightList)
                     binding.editValue.text.clear()
@@ -121,12 +104,10 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
         }
     }
 
-
-
     private fun deleteWeight(weightId: Int) {
         lifecycleScope.launch {
             try {
-                RetrofitClient.apiWeights.deleteWeightById(weightId)
+                RetrofitClient.weightsApi.deleteWeightById(weightId)
                 weightList.removeAll { it.weightId == weightId }
                 adapter.updateData(weightList)
             } catch (e: Exception) {
