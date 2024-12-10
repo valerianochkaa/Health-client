@@ -51,7 +51,6 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
         adapter = DrugsAdapter(emptyList(), requireContext(), this)
         binding.recycler.layoutManager = LinearLayoutManager(context)
         binding.recycler.adapter = adapter
-
         fetchDrugs(categoryName)
 
         // Search View
@@ -79,7 +78,7 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
             } else {
                 binding.textBlank.visibility = View.GONE
                 binding.recycler.visibility = View.VISIBLE
-                adapter.updateData(filteredList)
+                adapter.updateData(filteredDrugsList)
             }
         } else {
             // Если запрос пустой, показываем весь список для выбранной категории
