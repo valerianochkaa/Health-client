@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
 import com.example.health.data.weights.WeightsDTO
-import com.example.health.data.weights.WeightsList
 
 class WeightAdapter(
     private var weightList: List<WeightsDTO>,
@@ -30,7 +29,6 @@ class WeightAdapter(
         val weightData = weightList[position]
         holder.value.text = "${weightData.weightValue} кг"
         holder.recordDate.text = weightData.recordDate
-
         holder.itemView.setOnLongClickListener {
             onDelete(weightData.weightId ?: 0)
             true

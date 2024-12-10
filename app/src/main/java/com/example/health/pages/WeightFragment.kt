@@ -87,10 +87,16 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
                 weightValue = weightInput.toDouble(),
                 recordDate = currentDate
             )
-            Log.d("WeightFragment", "Sending weight: $newWeight")
+            val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            val token = sharedPreferences.getString("token", null)
+            if (token.isNullOrEmpty()) {
+                Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
+                return
+            }
+            Log.d("WeightFragment", "Sending weight: $newWeight with token: $token")
             lifecycleScope.launch {
                 try {
-                    val addedWeight = RetrofitClient.weightsApi.insertWeightAndGetId(newWeight)
+                    val addedWeight = RetrofitClient.weightsApi.insertWeightAndGetId(newWeight, "Bearer $token")
                     weightList.add(addedWeight)
                     adapter.updateData(weightList)
                     binding.editValue.text.clear()

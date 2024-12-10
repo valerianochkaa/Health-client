@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
 import com.example.health.data.temperatures.TemperaturesDTO
-import com.example.health.data.temperatures.TemperaturesList
 
 class TemperatureAdapter(
     private var temperatureList: List<TemperaturesDTO>,

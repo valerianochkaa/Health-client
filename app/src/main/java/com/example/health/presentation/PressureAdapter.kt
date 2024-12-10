@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
 import com.example.health.data.pressures.PressuresDTO
-import com.example.health.data.pressures.PressuresList
 
 class PressureAdapter(
     private var pressureList: List<PressuresDTO>,

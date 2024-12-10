@@ -7,6 +7,8 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface TemperaturesApi {
+    @POST("temperature/insert")
+    suspend fun insertTemperatureAndGetId(@Body temperature: TemperaturesDTO): TemperaturesDTO
     @GET("temperatures")
     suspend fun getAllTemperatures(): List<TemperaturesDTO>
 
@@ -16,8 +18,7 @@ interface TemperaturesApi {
     @GET("temperature/{temperatureId}")
     suspend fun getTemperatureById(@Path("temperatureId") temperatureId: Int): TemperaturesDTO
 
-    @POST("temperature/insert")
-    suspend fun insertTemperatureAndGetId(@Body temperature: TemperaturesDTO): TemperaturesDTO
+
 
     @DELETE("temperature/delete/{temperatureId}")
     suspend fun deleteTemperatureById(@Path("temperatureId") temperatureId: Int)
