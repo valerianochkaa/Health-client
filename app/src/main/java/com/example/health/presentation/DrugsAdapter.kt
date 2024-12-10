@@ -10,52 +10,36 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.example.health.R
+import com.example.health.data.drugs.DrugsDTO
 import com.example.health.data.drugs.DrugsList
+import com.example.health.data.weights.WeightsDTO
+import com.example.health.utils.RetrofitInstance
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
-class DrugsAdapter(var drugsList: List<DrugsList>, private val context: Context?) :
-    RecyclerView.Adapter<DrugsAdapter.DrugsViewHolder>() {
-
-    private val favoriteDrugs = mutableSetOf<DrugsList>()
-
+class DrugsAdapter(
+    private var drugsList: List<DrugsDTO>,
+    private val context: Context,
+    private val lifecycleOwner: LifecycleOwner
+) : RecyclerView.Adapter<DrugsAdapter.DrugsViewHolder>() {
     inner class DrugsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val name: TextView = itemView.findViewById(R.id.name)
         val btnInfo: ImageView = itemView.findViewById(R.id.btnInfo)
         val btnLike: ImageView = itemView.findViewById(R.id.btnLike)
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DrugsViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_drugs_search, parent, false)
         return DrugsViewHolder(view)
     }
-
     override fun onBindViewHolder(holder: DrugsViewHolder, position: Int) {
         val drug = drugsList[position]
-        holder.name.text = drug.name
-
-        // Устанавливаем иконку в зависимости от того, является ли лекарство любимым
-        if (favoriteDrugs.contains(drug)) {
-            holder.btnLike.setImageResource(R.drawable.ic_favorite_like)
-        } else {
-            holder.btnLike.setImageResource(R.drawable.ic_favorite)
-        }
-
+        holder.name.text = drug.drugName
         holder.btnInfo.setOnClickListener {
             showDialog(drug)
-        }
-
-        holder.btnLike.setOnClickListener {
-            // Добавляем или удаляем лекарство из избранного только если like == true
-            if (drug.like) {
-                if (favoriteDrugs.contains(drug)) {
-                    favoriteDrugs.remove(drug)
-                    holder.btnLike.setImageResource(R.drawable.ic_favorite)
-                } else {
-                    favoriteDrugs.add(drug)
-                    holder.btnLike.setImageResource(R.drawable.ic_favorite_like)
-                }
-            }
         }
     }
 
@@ -63,57 +47,67 @@ class DrugsAdapter(var drugsList: List<DrugsList>, private val context: Context?
         return drugsList.size
     }
 
-    fun setFilteredList(drugsList: List<DrugsList>) {
-        this.drugsList = drugsList
+    fun updateData(newDrugsList: List<DrugsDTO>) {
+        drugsList = newDrugsList
         notifyDataSetChanged()
     }
 
+    private fun showDialog(drug: DrugsDTO) {
+        val drugId = drug.drugId ?: return
+        lifecycleOwner.lifecycleScope.launch {
+            try {
+                val drugInstructions = RetrofitInstance.drugInstructionsApi.getDrugInstructionByDrugId(drugId)
 
-    private fun showDialog(drugsList: DrugsList) {
-        val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_instruction, null)
-        val dialogBuilder = AlertDialog.Builder(context)
-            .setView(dialogView)
-            .setCancelable(true)
-        val dialog = dialogBuilder.create()
-        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_instruction, null)
+                val dialogBuilder = AlertDialog.Builder(context)
+                    .setView(dialogView)
+                    .setCancelable(true)
+                val dialog = dialogBuilder.create()
+                dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
-        // Заполнение диалогового окна данными о лекарстве
-        val title: TextView = dialogView.findViewById(R.id.name)
-        val description: TextView = dialogView.findViewById(R.id.description)
-        val activeIngredients: TextView = dialogView.findViewById(R.id.activeIngredients)
-        val indications: TextView = dialogView.findViewById(R.id.composition)
-        val composition: TextView = dialogView.findViewById(R.id.indications)
-        val contraindications: TextView = dialogView.findViewById(R.id.contraindications)
-        val sideEffects: TextView = dialogView.findViewById(R.id.sideEffects)
-        val overdose: TextView = dialogView.findViewById(R.id.overdose)
-        val storageConditions: TextView = dialogView.findViewById(R.id.storageConditions)
-        val prescriptionRequirements: TextView = dialogView.findViewById(R.id.prescriptionRequirements)
-        val price: TextView = dialogView.findViewById(R.id.price)
-        val analog: TextView = dialogView.findViewById(R.id.analog)
-
-        title.text = drugsList.name
-        description.text = drugsList.description
-        activeIngredients.text = drugsList.activeIngredients
-        indications.text = drugsList.indications
-        composition.text = drugsList.composition
-        contraindications.text = drugsList.contraindications
-        sideEffects.text = drugsList.sideEffects
-        overdose.text = drugsList.overdose
-        storageConditions.text = drugsList.storageConditions
-        prescriptionRequirements.text = if (drugsList.prescriptionRequirements) {
-            "Да"
-        } else {
-            "Нет"
+                val textViewsMap = mapOf(
+                    R.id.name to drug.drugName,
+                    R.id.description to (drugInstructions.description ?: "Нет описания"),
+                    R.id.activeIngredients to (drugInstructions.activeIngredients ?: "Нет активных ингредиентов"),
+                    R.id.indications to (drugInstructions.indications ?: "Нет показаний"),
+                    R.id.composition to (drugInstructions.composition ?: "Нет состава"),
+                    R.id.contraindications to (drugInstructions.contraindications ?: "Нет противопоказаний"),
+                    R.id.sideEffects to (drugInstructions.sideEffects ?: "Нет побочных эффектов"),
+                    R.id.overdose to (drugInstructions.overdose ?: "Нет информации о передозировке"),
+                    R.id.storageConditions to (drugInstructions.storageConditions ?: "Нет условий хранения"),
+                    R.id.prescriptionRequirements to if (drugInstructions.prescriptionRequirements) "Да" else "Нет",
+                    R.id.price to drug.drugPrice.toString(),
+                    R.id.analog to drug.drugAnalog
+                )
+                textViewsMap.forEach { (id, text) ->
+                    dialogView.findViewById<TextView>(id).text = text
+                }
+                dialogView.findViewById<ImageView>(R.id.btnClose).setOnClickListener {
+                    dialog.dismiss()
+                }
+                dialog.show()
+            } catch (e: Exception) {
+                Log.e("DrugsAdapter", "Error fetching drug instructions", e)
+            }
         }
-        price.text = drugsList.price.toString()
-        analog.text = drugsList.analog
-
-        val btnClose: ImageView = dialogView.findViewById(R.id.btnClose)
-        btnClose.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
     }
 }
+
+//        if (favoriteDrugs.contains(drug)) {
+//            holder.btnLike.setImageResource(R.drawable.ic_favorite_like)
+//        } else {
+//            holder.btnLike.setImageResource(R.drawable.ic_favorite)
+//        }
+
+//        holder.btnLike.setOnClickListener {
+//            if (drug.like) {
+//                if (favoriteDrugs.contains(drug)) {
+//                    favoriteDrugs.remove(drug)
+//                    holder.btnLike.setImageResource(R.drawable.ic_favorite)
+//                } else {
+//                    favoriteDrugs.add(drug)
+//                    holder.btnLike.setImageResource(R.drawable.ic_favorite_like)
+//                }
+//            }
+//        }
 

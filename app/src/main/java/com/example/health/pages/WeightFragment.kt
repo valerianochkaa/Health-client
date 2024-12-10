@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -20,6 +21,9 @@ import com.example.health.utils.RetrofitInstance
 import com.example.health.utils.SwipeToDeleteCallback
 import com.example.myhealth.ui.adapters.WeightAdapter
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class WeightFragment : Fragment(R.layout.fragment_weight) {
     // View Binding
@@ -48,9 +52,7 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
 
         // Recycler View
         binding.recycler.layoutManager = LinearLayoutManager(context)
-        adapter = WeightAdapter(weightList, context) { weightId ->
-            deleteWeight(weightId)
-        }
+        adapter = WeightAdapter(weightList, context) { weightId -> deleteWeight(weightId)}
         binding.recycler.adapter = adapter
         fetchWeights()
 
@@ -86,18 +88,40 @@ class WeightFragment : Fragment(R.layout.fragment_weight) {
     }
 
     private fun addWeight() {
-        val newWeight = WeightsDTO(userIdWeights = 1, weightValue = 70.0, recordDate = "2023-10-01")
+        val weightInput = binding.editValue.text.toString()
 
-        lifecycleScope.launch {
-            try {
-                val addedWeight = RetrofitInstance.apiWeights.insertWeightAndGetId(newWeight)
-                weightList.add(addedWeight)
-                adapter.updateData(weightList)
-            } catch (e: Exception) {
-                Log.e("WeightFragment", "Error adding weight", e)
+        if (weightInput.isEmpty()) {
+            Toast.makeText(context, "Введите вес", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        try {
+            val currentDate = SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale("ru", "RU")).format(Date())
+            val newWeight = WeightsDTO(
+                userIdWeights = 1,
+                weightValue = weightInput.toDouble(),
+                recordDate = currentDate
+            )
+
+            Log.d("WeightFragment", "Sending weight: $newWeight")
+
+            lifecycleScope.launch {
+                try {
+                    val addedWeight = RetrofitInstance.apiWeights.insertWeightAndGetId(newWeight)
+                    weightList.add(addedWeight)
+                    adapter.updateData(weightList)
+                    binding.editValue.text.clear()
+                } catch (e: Exception) {
+                    Log.e("WeightFragment", "Error adding weight", e)
+                    Toast.makeText(context, "Ошибка при добавлении веса", Toast.LENGTH_SHORT).show()
+                }
             }
+        } catch (e: NumberFormatException) {
+            Toast.makeText(context, "Некорректный ввод", Toast.LENGTH_SHORT).show()
         }
     }
+
+
 
     private fun deleteWeight(weightId: Int) {
         lifecycleScope.launch {

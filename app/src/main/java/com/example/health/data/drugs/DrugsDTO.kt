@@ -1,9 +1,18 @@
 package com.example.health.data.drugs
 
-data class DrugsDTO (
+import com.google.gson.annotations.SerializedName
+
+data class DrugsDTO(
+    @SerializedName("drugId")
     val drugId: Int? = null,
+    @SerializedName("drugCategoryId")
     val drugCategoryId: Int,
-    val drugName: String? = null,
-    val drugPrice: Double? = null,
-    val drugAnalog: String? = null,
+    @SerializedName("drugInstructionId")
+    val drugInstructionId: Int,
+    @SerializedName("drugName")
+    val drugName: String,
+    @SerializedName("drugPrice")
+    val drugPrice: Double,
+    @SerializedName("drugAnalog")
+    val drugAnalog: String,
 )

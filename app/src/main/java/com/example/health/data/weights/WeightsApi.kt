@@ -7,6 +7,9 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface WeightsApi {
+    @POST("weight/insert")
+    suspend fun insertWeightAndGetId(@Body weight: WeightsDTO): WeightsDTO
+
     @GET("weights")
     suspend fun getAllWeights(): List<WeightsDTO>
 
@@ -16,8 +19,7 @@ interface WeightsApi {
     @GET("weight/{weightId}")
     suspend fun getWeightById(@Path("weightId") weightId: Int): WeightsDTO
 
-    @POST("weight/insert")
-    suspend fun insertWeightAndGetId(@Body weight: WeightsDTO): WeightsDTO
+
 
     @DELETE("weight/delete/{weightId}")
     suspend fun deleteWeightById(@Path("weightId") weightId: Int)

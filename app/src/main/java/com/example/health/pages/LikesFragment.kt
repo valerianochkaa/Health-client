@@ -32,10 +32,10 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Recycler View
-        binding.recycler.layoutManager = LinearLayoutManager(context)
-        addDataToList()
-        adapter = DrugsAdapter(drugsList.filter { it.like }, context)
-        binding.recycler.adapter = adapter
+//        binding.recycler.layoutManager = LinearLayoutManager(context)
+//        addDataToList()
+//        adapter = DrugsAdapter(drugsList.filter { it.like }, context)
+//        binding.recycler.adapter = adapter
     }
 
     private fun addDataToList() {
