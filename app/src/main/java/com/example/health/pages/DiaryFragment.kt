@@ -10,7 +10,6 @@ import com.example.health.R
 import com.example.health.databinding.FragmentDiaryBinding
 
 class DiaryFragment : Fragment(R.layout.fragment_diary) {
-    // View binding
     private var _binding: FragmentDiaryBinding? = null
     private val binding get() = _binding!!
 
@@ -24,8 +23,6 @@ class DiaryFragment : Fragment(R.layout.fragment_diary) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Navigation Component
         val navigationMap = mapOf(
             binding.cardWeight to R.id.diary_to_weight,
             binding.cardPressure to R.id.diary_to_pressure,

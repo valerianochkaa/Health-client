@@ -16,13 +16,10 @@ interface WeightsApi {
 
     @GET("weights")
     suspend fun getAllWeights(): List<WeightsDTO>
-
     @GET("weights/user/{userId}")
     suspend fun getAllWeightsByUser(@Path("userId") userId: Int): List<WeightsDTO>
-
     @GET("weight/{weightId}")
     suspend fun getWeightById(@Path("weightId") weightId: Int): WeightsDTO
-
     @DELETE("weight/delete/{weightId}")
     suspend fun deleteWeightById(@Path("weightId") weightId: Int)
 }

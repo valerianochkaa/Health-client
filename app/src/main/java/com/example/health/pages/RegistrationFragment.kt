@@ -33,7 +33,6 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.btnReg.setOnClickListener {
             val email = binding.editEmail.text.toString().trim()
             val password = binding.editPass.text.toString().trim()
@@ -54,7 +53,6 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
                 }
             }
         }
-
         setupNavigation()
     }
 
@@ -66,21 +64,18 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
 
     private fun registerUser(email: String, password: String) {
         val userCredentials = UserCredentials(email, password)
-
         RetrofitClient.userApi.registerUser(userCredentials).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 when {
                     response.isSuccessful -> {
                         Log.d("RegistrationFragment", "Response received: ${response.code()}")
-                        // Извлекаем токен из ответа
-                        val token = response.body()?.token // Предполагается, что LoginResponse имеет поле token
+                        val token = response.body()?.token
                         if (token != null) {
                             Log.d("RegistrationFragment", "Registration successful! Token: $token")
-                            saveToken(token) // Сохраняем токен в SharedPreferences
+                            saveToken(token)
                         } else {
                             Log.e("RegistrationFragment", "Token is null")
                         }
-                        // Переход на следующий экран
                         findNavController().navigate(R.id.registration_to_drugs_category)
                     }
                     response.code() == 400 -> {
@@ -95,7 +90,6 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
                     }
                 }
             }
-
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.e("RegistrationFragment", "Network error: ${t.message}")
                 showSnackbar("Ошибка сети. Проверьте подключение к интернету.")
@@ -106,7 +100,7 @@ class RegistrationFragment : Fragment(R.layout.fragment_registration) {
     private fun saveToken(token: String) {
         val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         with(sharedPreferences.edit()) {
-            putString("token", token) // Сохраняем токен под ключом "token"
+            putString("token", token)
             apply()
         }
         Log.d("RegistrationFragment", "Token saved successfully!")

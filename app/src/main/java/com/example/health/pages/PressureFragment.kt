@@ -27,11 +27,8 @@ import java.util.Locale
 
 
 class PressureFragment : Fragment(R.layout.fragment_pressure) {
-    // View binding
     private var _binding: FragmentPressureBinding? = null
     private val binding get() = _binding!!
-
-    // Recycler View
     private lateinit var adapter: PressureAdapter
     private var pressureList = mutableListOf<PressuresDTO>()
 
@@ -45,13 +42,9 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Navigation Component
         binding.btnBack.setOnClickListener{
             findNavController().navigate(R.id.pressure_to_diary)
         }
-
-        // Recycler View
         binding.recycler.layoutManager = LinearLayoutManager(context)
         adapter = PressureAdapter(pressureList, context) { pressureId ->
             deletePressure(pressureId)
@@ -59,7 +52,6 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
         binding.recycler.adapter = adapter
         fetchPressures()
 
-        // SetOnClickListener - btnAdd
         binding.btnAdd.setOnClickListener {
             addPressure()
             hideKeyboard()
@@ -73,18 +65,16 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
                 adapter.notifyItemRemoved(position)
             }
         }
-
         ItemTouchHelper(swipeToDeleteCallback).attachToRecyclerView(binding.recycler)
     }
 
     private fun fetchPressures() {
         lifecycleScope.launch {
             try {
-                // Запрос на сервер для получения всех записей давления
                 val pressures = RetrofitClient.pressuresApi.getAllPressures()
-                pressureList.clear() // Очистка текущего списка
-                pressureList.addAll(pressures) // Добавление новых данных
-                adapter.updateData(pressureList) // Обновление данных в адаптере
+                pressureList.clear()
+                pressureList.addAll(pressures)
+                adapter.updateData(pressureList)
             } catch (e: Exception) {
                 Log.e("PressureFragment", "Error fetching pressures", e)
                 Toast.makeText(context, "Ошибка при загрузке данных давления", Toast.LENGTH_SHORT).show()
@@ -96,46 +86,33 @@ class PressureFragment : Fragment(R.layout.fragment_pressure) {
         val upperValueInput = binding.editValue1.text.toString()
         val lowerValueInput = binding.editValue2.text.toString()
         val pulseValueInput = binding.editValue3.text.toString()
-
         if (upperValueInput.isEmpty() || lowerValueInput.isEmpty() || pulseValueInput.isEmpty()) {
             Toast.makeText(context, "Заполните все поля", Toast.LENGTH_SHORT).show()
             return
         }
-
         try {
-            // Форматирование текущей даты
             val currentDate = SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale("ru", "RU")).format(
                 Date()
             )
-
-            // Создание нового объекта давления
             val newPressure = PressuresDTO(
-                userIdPressure = 1, // ID пользователя (заменить на актуальный)
-                upperValue = upperValueInput.toInt(), // Верхнее значение давления
-                lowerValue = lowerValueInput.toInt(), // Нижнее значение давления
-                pulseValue = pulseValueInput.toInt(), // Пульс
+                userIdPressure = 1,
+                upperValue = upperValueInput.toInt(),
+                lowerValue = lowerValueInput.toInt(),
+                pulseValue = pulseValueInput.toInt(),
                 recordDate = currentDate
             )
-
-            // Получение токена из SharedPreferences
             val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
             val token = sharedPreferences.getString("token", null)
-
             if (token.isNullOrEmpty()) {
                 Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
                 return
             }
-
             Log.d("PressureFragment", "Sending pressure: $newPressure with token: $token")
-
             lifecycleScope.launch {
                 try {
-                    // Отправка новой записи давления на сервер и получение добавленного объекта
                     val addedPressure = RetrofitClient.pressuresApi.insertPressureAndGetId(newPressure, "Bearer $token")
-                    pressureList.add(addedPressure) // Добавление новой записи в список
-                    adapter.updateData(pressureList) // Обновление данных в адаптере
-
-                    // Очистка полей ввода после успешного добавления
+                    pressureList.add(addedPressure)
+                    adapter.updateData(pressureList)
                     binding.editValue1.text.clear()
                     binding.editValue2.text.clear()
                     binding.editValue3.text.clear()

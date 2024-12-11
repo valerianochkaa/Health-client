@@ -41,15 +41,12 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
     }
 
     private fun setupRecyclerView() {
-        // Получение токена из SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("token", null)
         if (token.isNullOrEmpty()) {
             Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
             return
         }
-
-        // Настройка адаптера с передачей API и токена
         val drugLikeApi = RetrofitClient.drugLikeApi
         adapter = DrugsAdapter(
             drugsList = likedDrugsList,
@@ -63,7 +60,6 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
     }
 
     private fun fetchLikedDrugs() {
-        // Получение списка понравившихся препаратов
         viewLifecycleOwner.lifecycleScope.launch {
             runCatching {
                 RetrofitClient.drugLikeApi.getDrugLikesByUser(userId)
@@ -75,8 +71,6 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
                     Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
                     return@onSuccess
                 }
-
-                // Получение деталей препаратов
                 val drugDetailsList = likedDrugs.mapNotNull { likedDrug ->
                     fetchDrugDetails(likedDrug.drugId)
                 }
@@ -90,7 +84,6 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
     }
 
     private suspend fun fetchDrugDetails(drugId: Int): DrugsDTO? {
-        // Метод для получения деталей препарата по ID
         return runCatching {
             RetrofitClient.drugsApi.getDrugById(drugId)
         }.getOrNull()

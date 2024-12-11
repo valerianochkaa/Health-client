@@ -8,20 +8,14 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface PressuresApi {
-    @POST("pressure/insert")
-    suspend fun insertPressureAndGetId(@Body pressure: PressuresDTO, @Header("Authorization") token: String): PressuresDTO
-
     @GET("pressures")
     suspend fun getAllPressures(): List<PressuresDTO>
-
     @GET("pressures/user/{userId}")
     suspend fun getAllPressuresByUser(@Path("userId") userId: Int): List<PressuresDTO>
-
     @GET("pressure/{pressureId}")
     suspend fun getPressureById(@Path("pressureId") pressureId: Int): PressuresDTO
-
-
-
+    @POST("pressure/insert")
+    suspend fun insertPressureAndGetId(@Body pressure: PressuresDTO, @Header("Authorization") token: String): PressuresDTO
     @DELETE("pressure/delete/{pressureId}")
     suspend fun deletePressureById(@Path("pressureId") pressureId: Int)
 }

@@ -88,7 +88,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     Snackbar.make(binding.root, "Ошибка авторизации. Проверьте данные.", Snackbar.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                 Log.e("LoginFragment", "Network error: ${t.message}")
                 Snackbar.make(binding.root, "Ошибка сети. Попробуйте позже.", Snackbar.LENGTH_SHORT).show()

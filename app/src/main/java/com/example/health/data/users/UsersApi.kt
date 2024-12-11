@@ -10,16 +10,10 @@ interface UsersApi {
     @POST("register")
     fun registerUser(@Body userCredentials: UserCredentials): Call<LoginResponse>
 }
-
 data class UserCredentials(
     val email: String,
     val password: String
 )
-
 data class LoginResponse(
     val token: String
 )
-data class RegisterResponse(
-    val token: String
-)
-

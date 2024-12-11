@@ -10,7 +10,6 @@ import com.example.health.R
 import com.example.health.databinding.FragmentDrugsCategoryBinding
 
 class DrugsCategoryFragment : Fragment(R.layout.fragment_drugs_category) {
-    // View binding
     private var _binding: FragmentDrugsCategoryBinding? = null
     private val binding get() = _binding!!
 
@@ -24,8 +23,6 @@ class DrugsCategoryFragment : Fragment(R.layout.fragment_drugs_category) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Navigation Component
         binding.cardPill.setOnClickListener{
             val category = Bundle()
             category.putString("categoryName", "Таблетки")
@@ -46,8 +43,5 @@ class DrugsCategoryFragment : Fragment(R.layout.fragment_drugs_category) {
             category.putString("categoryName", "Уколы")
             findNavController().navigate(R.id.drugs_category_to_drugs, category)
         }
-
-
-
     }
 }
