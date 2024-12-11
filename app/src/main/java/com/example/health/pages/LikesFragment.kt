@@ -1,11 +1,13 @@
 package com.example.health.pages
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.health.R
@@ -20,7 +22,7 @@ import kotlinx.coroutines.launch
 class LikesFragment : Fragment(R.layout.fragment_likes) {
     private var _binding: FragmentLikesBinding? = null
     private val binding get() = _binding!!
-    private var drugsList = mutableListOf<DrugWithLikeStatus>()
+    private val likedDrugsList = mutableListOf<DrugWithLikeStatus>()
     private lateinit var adapter: DrugsAdapter
     private val userId = 1
 
@@ -34,38 +36,63 @@ class LikesFragment : Fragment(R.layout.fragment_likes) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        setupRecyclerView()
+        setupRecyclerView()
         fetchLikedDrugs()
     }
 
-//    private fun setupRecyclerView() {
-//        adapter = DrugsAdapter(drugsList, requireContext(), viewLifecycleOwner)
-//        binding.recycler.layoutManager = LinearLayoutManager(context)
-//        binding.recycler.adapter = adapter
-//    }
+    private fun setupRecyclerView() {
+        // Получение токена из SharedPreferences
+        val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val token = sharedPreferences.getString("token", null)
+        if (token.isNullOrEmpty()) {
+            Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Настройка адаптера с передачей API и токена
+        val drugLikeApi = RetrofitClient.drugLikeApi
+        adapter = DrugsAdapter(
+            drugsList = likedDrugsList,
+            context = requireContext(),
+            lifecycleOwner = viewLifecycleOwner,
+            drugLikeApi = drugLikeApi,
+            token = "Bearer $token"
+        )
+        binding.recycler.layoutManager = LinearLayoutManager(context)
+        binding.recycler.adapter = adapter
+    }
 
     private fun fetchLikedDrugs() {
+        // Получение списка понравившихся препаратов
         viewLifecycleOwner.lifecycleScope.launch {
             runCatching {
-                drugLikeApi.getDrugLikesByUser(userId)
+                RetrofitClient.drugLikeApi.getDrugLikesByUser(userId)
             }.onSuccess { likedDrugs ->
+                val token = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                    .getString("token", null)
+
+                if (token.isNullOrEmpty()) {
+                    Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
+                    return@onSuccess
+                }
+
+                // Получение деталей препаратов
                 val drugDetailsList = likedDrugs.mapNotNull { likedDrug ->
                     fetchDrugDetails(likedDrug.drugId)
                 }
-                drugsList.clear()
-                drugsList.addAll(drugDetailsList.map { DrugWithLikeStatus(it, true) })
+                likedDrugsList.clear()
+                likedDrugsList.addAll(drugDetailsList.map { DrugWithLikeStatus(it, true) })
                 adapter.notifyDataSetChanged()
             }.onFailure { e ->
-                Log.e("LikesFragment", "Error fetching liked drugs", e)
+                Log.e("LikesFragment", "Ошибка при загрузке понравившихся препаратов", e)
             }
         }
     }
 
     private suspend fun fetchDrugDetails(drugId: Int): DrugsDTO? {
+        // Метод для получения деталей препарата по ID
         return runCatching {
             RetrofitClient.drugsApi.getDrugById(drugId)
-        }.onFailure { e ->
-            Log.e("LikesFragment", "Error fetching drug details for ID $drugId", e)
         }.getOrNull()
     }
 

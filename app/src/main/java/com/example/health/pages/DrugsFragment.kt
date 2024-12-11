@@ -52,32 +52,23 @@ class DrugsFragment : Fragment(R.layout.fragment_drugs) {
     }
 
     private fun setupRecyclerView() {
-        // Получаем токен авторизации из SharedPreferences
         val sharedPreferences = requireContext().getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
         val token = sharedPreferences.getString("token", null)
         if (token.isNullOrEmpty()) {
             Toast.makeText(context, "Токен отсутствует. Авторизуйтесь снова.", Toast.LENGTH_SHORT).show()
             return
         }
-
-        // Используем готовый экземпляр API из RetrofitClient
-        val drugLikeApi = RetrofitClient.drugLikeApi // Или создайте отдельный DrugLikeApi, если это другой интерфейс
-
-        // Создаем адаптер с передачей необходимых параметров
+        val drugLikeApi = RetrofitClient.drugLikeApi
         adapter = DrugsAdapter(
-            drugsList = allDrugsList, // Список данных
-            context = requireContext(), // Контекст
-            lifecycleOwner = viewLifecycleOwner, // LifecycleOwner для корутин
-            drugLikeApi = drugLikeApi, // Экземпляр API
-            token = "Bearer $token" // Передаем токен с приставкой "Bearer"
+            drugsList = allDrugsList,
+            context = requireContext(),
+            lifecycleOwner = viewLifecycleOwner,
+            drugLikeApi = drugLikeApi,
+            token = "Bearer $token"
         )
-
-        // Настройка RecyclerView
         binding.recycler.layoutManager = LinearLayoutManager(context)
         binding.recycler.adapter = adapter
     }
-
-
 
     private fun setupSearchView() {
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
