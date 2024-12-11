@@ -25,14 +25,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         ThemeUtils.applyTheme(this)
         setContentView(R.layout.activity_main)
-
         navController = findNavController(R.id.navHostFragment)
         navView = findViewById(R.id.bottomNavigation)
-
         checkTokenAndNavigate()
-
         navView.setupWithNavController(navController)
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
             navView.visibility = if (destination.id in listOf(
                     R.id.drugsCategoryFragment,
@@ -41,7 +37,6 @@ class MainActivity : AppCompatActivity() {
                     R.id.settingsFragment
                 )) View.VISIBLE else View.GONE
         }
-
         navView.setOnNavigationItemSelectedListener { item ->
             val destinationId = when (item.itemId) {
                 R.id.drugsCategory -> R.id.drugsCategoryFragment
@@ -50,10 +45,16 @@ class MainActivity : AppCompatActivity() {
                 R.id.settingsFragment -> R.id.settingsFragment
                 else -> return@setOnNavigationItemSelectedListener false
             }
-            navController.navigate(destinationId)
+            if (navController.currentDestination?.id != destinationId) {
+                navController.navigate(destinationId)
+            }
             true
         }
+        if (savedInstanceState == null) {
+            navController.navigate(R.id.drugsCategoryFragment)
+        }
     }
+
 
     private fun checkTokenAndNavigate() {
         val sharedPreferences = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)

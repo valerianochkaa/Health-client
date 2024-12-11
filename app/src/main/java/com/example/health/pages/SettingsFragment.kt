@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.findNavController
 import com.example.health.R
 import com.example.health.databinding.FragmentSettingsBinding
@@ -33,8 +34,11 @@ class SettingsFragment : Fragment(R.layout.fragment_settings) {
         binding.switchTheme.setOnCheckedChangeListener { _, isChecked ->
             ThemeUtils.saveTheme(requireContext(), isChecked)
             ThemeUtils.applyTheme(requireContext())
-            activity?.recreate()
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            )
         }
+
 
         binding.btnLogout.setOnClickListener {
             logoutUser()

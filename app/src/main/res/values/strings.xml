@@ -12,7 +12,6 @@
     <string name="login_btnLogin">Войти</string>
     <string name="login_question">Нет аккаунта?</string>
     <string name="login_btnReg">Зарегистрироваться</string>
-    <string name="login_btnNoLogin">Войти без аккаунта</string>
 
     <string name="reg_title">Регистрация</string>
     <string name="reg_editEmail">Почта</string>

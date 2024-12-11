@@ -59,7 +59,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private fun setupNavigation() {
         val navigationMap = mapOf(
             binding.btnReg to R.id.login_to_registration,
-            binding.btnNoLogin to R.id.login_to_drugs_category,
         )
         navigationMap.forEach { (view, destination) ->
             view.setOnClickListener {
